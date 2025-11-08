@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Mektup Önizleme";
+}
+
+<div class="container py-5">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-header bg-dark text-light rounded-top-4">
+            <h4 class="mb-0">Zaman Kapsülü Mektubun</h4>
+        </div>
+        <div class="card-body">
+            <h5>@ViewBag.Subject</h5>
+            <pre class="mt-3" style="white-space: pre-wrap;">@ViewBag.Body</pre>
+        </div>
+    </div>
+</div>

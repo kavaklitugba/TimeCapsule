@@ -1,0 +1,191 @@
+﻿@using Business.DTOs
+@model TimeCapsuleCreateDto
+
+@{
+    ViewData["Title"] = "Zaman Kapsülü";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark text-light rounded-top-4">
+                    <h3 class="mb-0">Geleceğe Mektup</h3>
+                    <small class="text-secondary">Bugünden yaz, seçtiğin tarihte mail olarak gönderilsin.</small>
+                </div>
+                <div class="card-body p-4">
+
+                    @* Başarılı kayıt sonrası mesaj *@
+                    @if (ViewBag.Success != null)
+                    {
+                        <div class="alert alert-success">
+                            @ViewBag.Success <br />
+                            @if (ViewBag.PreviewUrl != null)
+                            {
+                                <div>
+                                    <strong>Önizleme Linki:</strong>
+                                    <a href="@ViewBag.PreviewUrl" target="_blank">@ViewBag.PreviewUrl</a>
+                                </div>
+                            }
+                            @if (ViewBag.CancelUrl != null)
+                            {
+                                <div>
+                                    <strong>İptal Linki:</strong>
+                                    <a href="@ViewBag.CancelUrl" target="_blank">@ViewBag.CancelUrl</a>
+                                </div>
+                                <small class="text-muted">
+                                    Bu linki kaybetme; sadece bu link ile iptal edebilirsin.
+                                </small>
+                            }
+                        </div>
+                    }
+
+                    @* Validation hataları *@
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>@err.ErrorMessage</div>
+                            }
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label">Gönderen E-posta</label>
+                            <input asp-for="SenderEmail"
+                                   type="email"
+                                   class="form-control"
+                                   placeholder="sen@ornek.com"
+                                   required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Alıcı E-posta</label>
+                            <input asp-for="RecipientEmail"
+                                   type="email"
+                                   class="form-control"
+                                   placeholder="gelecekteki.sen@ornek.com"
+                                   required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Konu (opsiyonel)</label>
+                            <input asp-for="Subject"
+                                   class="form-control"
+                                   placeholder="Gelecekteki ben..." />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label d-block">Gönderim Tarihi</label>
+
+                            <div class="d-grid gap-2 mb-2">
+                                <div class="btn-group d-flex flex-wrap justify-content-between" role="group" aria-label="Hazır süreler">
+                                    <input type="radio" class="btn-check" name="presetMonths" id="m3" value="3" autocomplete="off">
+                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m3">3 Ay</label>
+
+                                    <input type="radio" class="btn-check" name="presetMonths" id="m6" value="6" autocomplete="off">
+                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m6">6 Ay</label>
+
+                                    <input type="radio" class="btn-check" name="presetMonths" id="m12" value="12" autocomplete="off">
+                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m12">1 Yıl</label>
+
+                                    <input type="radio" class="btn-check" name="presetMonths" id="m24" value="24" autocomplete="off">
+                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m24">2 Yıl</label>
+
+                                    <input type="radio" class="btn-check" name="presetMonths" id="m60" value="60" autocomplete="off">
+                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m60">5 Yıl</label>
+
+                                    <input type="radio" class="btn-check" name="presetMonths" id="m120" value="120" autocomplete="off">
+                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m120">10 Yıl</label>
+
+                                    <input type="radio" class="btn-check" name="presetMonths" id="none" value="" autocomplete="off" checked>
+                                    <label class="btn btn-outline-secondary btn-sm flex-fill" for="none">Tarih Seç</label>
+                                </div>
+                            </div>
+
+                            <input asp-for="SendAtLocal"
+                                   type="datetime-local"
+                                   class="form-control"
+                                   id="sendAtInput"
+                                   required />
+
+                            <small class="text-muted">
+                                İstersen hazır sürelerden birini seç; istersen alttaki alandan tam tarih &amp; saati belirle.
+                            </small>
+                        </div>
+
+
+                        <div class="mb-3">
+                            <label class="form-label">Mesajın</label>
+                            <textarea asp-for="Body"
+                                      rows="7"
+                                      class="form-control"
+                                      placeholder="Gelecekteki kendine ne söylemek istersin?"
+                                      required></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                İçerik şifrelenmiş olarak saklanır. Sadece gönderim anında çözümlenir.
+                            </small>
+                            <button type="submit" class="btn btn-dark px-4">
+                                Zaman Kapsülüne Kaydet
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sendAtInput = document.getElementById('sendAtInput');
+
+            // Sayfa açıldığında bugünle doldur (modelden gelmiyorsa)
+            if (sendAtInput && !sendAtInput.value) {
+                const now = new Date();
+                now.setSeconds(0, 0);
+                sendAtInput.value = now.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
+            }
+
+            // Preset ay seçilince tarihi otomatik ayarla
+            const radios = document.querySelectorAll('input[name="presetMonths"]');
+
+            radios.forEach(r => {
+                r.addEventListener('change', function () {
+                    if (!sendAtInput) return;
+
+                    if (!this.value) {
+                        // "Tarih Seç" seçildiyse: elle düzenlemeye izin ver, input'u elle bırak.
+                        return;
+                    }
+
+                    const monthsToAdd = parseInt(this.value);
+                    if (isNaN(monthsToAdd)) return;
+
+                    const base = new Date();
+                    base.setSeconds(0, 0);
+                    base.setMonth(base.getMonth() + monthsToAdd);
+
+                    // yyyy-MM-ddTHH:mm formatı
+                    const yyyy = base.getFullYear();
+                    const mm = String(base.getMonth() + 1).padStart(2, '0');
+                    const dd = String(base.getDate()).padStart(2, '0');
+                    const hh = String(base.getHours()).padStart(2, '0');
+                    const min = String(base.getMinutes()).padStart(2, '0');
+
+                    sendAtInput.value = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+                });
+            });
+        });
+    </script>
+}
