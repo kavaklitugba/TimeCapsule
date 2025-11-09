@@ -5,7 +5,7 @@
     ViewData["Title"] = "Zaman Kapsülü";
 }
 
-<div class="container py-5">
+<div class="container pd-bt-1">
     <div class="row justify-content-center">
         <div class="col-lg-7">
 
@@ -20,22 +20,20 @@
                     @if (ViewBag.Success != null)
                     {
                         <div class="alert alert-success">
-                            @ViewBag.Success <br />
-                            @if (ViewBag.PreviewUrl != null)
+                            <div>@ViewBag.Success</div>
+
+                            @if (ViewBag.LookupId != null)
                             {
+                                <hr />
                                 <div>
-                                    <strong>Önizleme Linki:</strong>
-                                    <a href="@ViewBag.PreviewUrl" target="_blank">@ViewBag.PreviewUrl</a>
-                                </div>
-                            }
-                            @if (ViewBag.CancelUrl != null)
-                            {
-                                <div>
-                                    <strong>İptal Linki:</strong>
-                                    <a href="@ViewBag.CancelUrl" target="_blank">@ViewBag.CancelUrl</a>
+                                    <strong>Kapsül ID:</strong>
+                                    <code>@ViewBag.LookupId</code>
                                 </div>
                                 <small class="text-muted">
-                                    Bu linki kaybetme; sadece bu link ile iptal edebilirsin.
+                                    Bu ID’yi güvenli bir yerde sakla. Gelecekte kapsülünü
+                                    <a asp-controller="TimeCapsule" asp-action="Lookup"
+                                       asp-route-lookupId="@ViewBag.LookupId" target="_blank">Kapsül Yönetim</a>
+                                    sayfasında bu ID ile sorgulayabilir, iptal edebilir veya tarihini güncelleyebilirsin.
                                 </small>
                             }
                         </div>
@@ -60,7 +58,7 @@
                             <input asp-for="SenderEmail"
                                    type="email"
                                    class="form-control"
-                                   placeholder="sen@ornek.com"
+                                   placeholder="sen@gmail.com"
                                    required />
                         </div>
 
@@ -69,7 +67,7 @@
                             <input asp-for="RecipientEmail"
                                    type="email"
                                    class="form-control"
-                                   placeholder="gelecekteki.sen@ornek.com"
+                                   placeholder="gelecekteki.sen@gmail.com"
                                    required />
                         </div>
 
@@ -77,12 +75,16 @@
                             <label class="form-label">Konu (opsiyonel)</label>
                             <input asp-for="Subject"
                                    class="form-control"
-                                   placeholder="Gelecekteki ben..." />
+                                   placeholder="Geleceğe mektup..." />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label d-block">Gönderim Tarihi</label>
-
+                            <div class="mb-2">
+                                <small class="text-muted ">
+                                    İstersen hazır sürelerden birini seç; istersen alttaki alandan tam tarih &amp; saati belirle.
+                                </small>
+                            </div>
                             <div class="d-grid gap-2 mb-2">
                                 <div class="btn-group d-flex flex-wrap justify-content-between" role="group" aria-label="Hazır süreler">
                                     <input type="radio" class="btn-check" name="presetMonths" id="m3" value="3" autocomplete="off">
@@ -114,9 +116,7 @@
                                    id="sendAtInput"
                                    required />
 
-                            <small class="text-muted">
-                                İstersen hazır sürelerden birini seç; istersen alttaki alandan tam tarih &amp; saati belirle.
-                            </small>
+
                         </div>
 
 
@@ -125,18 +125,25 @@
                             <textarea asp-for="Body"
                                       rows="7"
                                       class="form-control"
-                                      placeholder="Gelecekteki kendine ne söylemek istersin?"
+                                      placeholder="Geleceğe ne söylemek istersin?"
                                       required></textarea>
                         </div>
 
-                        <div class="d-flex justify-content-between align-items-center">
-                            <small class="text-muted">
-                                İçerik şifrelenmiş olarak saklanır. Sadece gönderim anında çözümlenir.
-                            </small>
-                            <button type="submit" class="btn btn-dark px-4">
-                                Zaman Kapsülüne Kaydet
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mt-4">
+
+                            <div class="d-flex align-items-start text-muted small secure-hint">
+                                <div class="secure-dot me-2 mt-1"></div>
+                                <div>
+                                    İçerik şifrelenmiş olarak saklanır; 
+                                    seçtiğiniz tarihte sistem tarafından çözüldükten sonra alıcıya iletilir.
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn capsule-submit-btn px-4 py-2">
+                                <span>Zaman Kapsülüne Kaydet</span>
                             </button>
                         </div>
+
                     </form>
                 </div>
             </div>

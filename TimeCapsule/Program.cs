@@ -30,6 +30,9 @@ builder.Services.AddScoped<IEmailSender, SmtpEmailSender>();
 // Ana servis
 builder.Services.AddScoped<ITimeCapsuleService, TimeCapsuleService>();
 
+builder.Services.AddScoped<ISpamProtectionService, SpamProtectionService>();
+builder.Services.AddSingleton<IHashService, HashService>();
+
 // ===== Hangfire =====
 builder.Services.AddHangfire(cfg =>
 {

@@ -1,29 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Entities
+﻿namespace Entities
 {
     public class TimeCapsuleMessage
     {
         public int Id { get; set; }
 
-        public string SenderEmail { get; set; }
-        public string RecipientEmail { get; set; }
-        public string Subject { get; set; }
+        // Kullanıcıya verdiğimiz yönetim ID'si
+        public string LookupId { get; set; }
+
+        // Şifreli alanlar
+        public byte[] SenderEmailEncrypted { get; set; }
+        public byte[] SenderEmailIv { get; set; }
+
+        public byte[] RecipientEmailEncrypted { get; set; }
+        public byte[] RecipientEmailIv { get; set; }
+
+        public byte[] SubjectEncrypted { get; set; }
+        public byte[] SubjectIv { get; set; }
 
         public byte[] EncryptedBody { get; set; }
-        public byte[] Iv { get; set; }
+        public byte[] BodyIv { get; set; }
 
+        // Hash'ler (PII'yi düz tutmamak için)
+        public byte[] SenderEmailHash { get; set; }
+        public byte[] RecipientEmailHash { get; set; }
+        public byte[] SubjectHash { get; set; }
+
+        // Zamanlar
+        public DateTime CreatedAtUtc { get; set; }
         public DateTime SendAtUtc { get; set; }
         public DateTime? SentAtUtc { get; set; }
 
+        // Durum
         public bool IsActive { get; set; }
-        public DateTime CreatedAtUtc { get; set; }
-
-        public byte[] CancelTokenHash { get; set; }
-        public byte[] PreviewTokenHash { get; set; }
     }
 }

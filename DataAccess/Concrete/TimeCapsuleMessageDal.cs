@@ -23,16 +23,10 @@ namespace DataAccess.Concrete
             await _context.TimeCapsuleMessages.AddAsync(entity);
         }
 
-        public Task<TimeCapsuleMessage> GetByPreviewTokenHashAsync(byte[] previewTokenHash)
+        public async Task<TimeCapsuleMessage> GetByLookupIdAsync(string lookupId)
         {
-            return _context.TimeCapsuleMessages
-                .FirstOrDefaultAsync(x => x.PreviewTokenHash == previewTokenHash && x.IsActive);
-        }
-
-        public Task<TimeCapsuleMessage> GetByCancelTokenHashAsync(byte[] cancelTokenHash)
-        {
-            return _context.TimeCapsuleMessages
-                .FirstOrDefaultAsync(x => x.CancelTokenHash == cancelTokenHash && x.IsActive);
+            return await _context.TimeCapsuleMessages
+                .FirstOrDefaultAsync(x => x.LookupId == lookupId);
         }
 
         public Task<List<TimeCapsuleMessage>> GetDueMessagesAsync(DateTime utcNow, int take)

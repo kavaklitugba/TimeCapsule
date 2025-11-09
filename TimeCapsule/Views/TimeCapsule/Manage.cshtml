@@ -1,0 +1,170 @@
+﻿@model Business.DTOs.TimeCapsuleManageViewModel
+@{
+    ViewData["Title"] = "Kapsül Yönetimi";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-dark text-light rounded-top-4">
+                    <h3 class="mb-0">Kapsül Yönetimi</h3>
+                    <small class="text-secondary">
+                        Kapsül ID’nizi girerek durumunu kontrol edin veya işlemleri yönetin.
+                    </small>
+                </div>
+                <div class="card-body p-4">
+                    @if (ViewBag.Message != null)
+                    {
+                        <div class="alert alert-info">@ViewBag.Message</div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>@err.ErrorMessage</div>
+                            }
+                        </div>
+                    }
+                    <form asp-action="Lookup" method="get" class="mb-4">
+                        <div class="input-group">
+                            <input type="text"
+                                   name="lookupId"
+                                   class="form-control"
+                                   placeholder="Kapsül ID’nizi girin"
+                                   required />
+                            <button class="btn btn-dark" type="submit">Sorgula</button>
+                        </div>
+                    </form>
+
+                    @if (Model != null)
+                    {
+                        <!-- SADECE OKUNABİLİR BÖLÜM -->
+                        <div class="card border-secondary mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">Kapsül Bilgileri</h5>
+
+                                <p><strong>ID:</strong> @Model.LookupId</p>
+                                <p><strong>Gönderen:</strong> @Model.SenderEmail</p>
+                                <p><strong>Alıcı:</strong> @Model.RecipientEmail</p>
+                                <p><strong>Konu:</strong> @Model.Subject</p>
+                                <p><strong>Oluşturulma Tarihi:</strong> @Model.CreatedAtLocal</p>
+                                <p><strong>Planlanan Gönderim:</strong> @Model.SendAtLocal</p>
+
+                                @if (Model.SentAtLocal.HasValue)
+                                {
+                                    <p><strong>Gönderildi:</strong> @Model.SentAtLocal</p>
+                                }
+
+                                <p>
+                                    <strong>Durum:</strong>
+                                    @if (Model.IsActive && !Model.SentAtLocal.HasValue)
+                                    {
+                                        <span class="badge bg-success">Aktif</span>
+                                    }
+                                    else if (Model.SentAtLocal.HasValue)
+                                    {
+                                        <span class="badge bg-primary">Gönderildi</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">İptal Edildi</span>
+                                    }
+                                </p>
+
+                                @* BURASI YENİ *@
+                                <p><strong>Mesaj İçeriği:</strong></p>
+                                <div class="border rounded bg-light px-3 py-2 text-start" >
+                                    @Model.Body
+                                </div>
+                            </div>
+                        </div>
+
+
+                        @if (Model.IsActive && !Model.SentAtLocal.HasValue)
+                        {
+                            <!-- İPTAL + DÜZENLE BUTONLARI -->
+                            <div class="mb-3 d-flex gap-2">
+                                <form asp-action="Cancel" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="lookupId" value="@Model.LookupId" />
+                                    <button type="submit" class="btn btn-danger">
+                                        İptal Et
+                                    </button>
+                                </form>
+
+                                <button type="button" id="toggleEdit" class="btn btn-outline-secondary">
+                                    Düzenle
+                                </button>
+                            </div>
+
+                            <!-- DÜZENLEME FORMU (BAŞTA GİZLİ) -->
+                            <div id="editSection" class="card mt-2 d-none">
+                                <div class="card-body">
+                                    <h5 class="card-title">Kapsülü Düzenle</h5>
+                                    <form asp-action="Update" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="LookupId" value="@Model.LookupId" />
+
+                                        <div class="mb-2">
+                                            <label class="form-label">Gönderen E-posta</label>
+                                            <input class="form-control" name="SenderEmail"
+                                                   value="@Model.SenderEmail" required />
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label class="form-label">Alıcı E-posta</label>
+                                            <input class="form-control" name="RecipientEmail"
+                                                   value="@Model.RecipientEmail" required />
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label class="form-label">Konu</label>
+                                            <input class="form-control" name="Subject"
+                                                   value="@Model.Subject" />
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <label class="form-label">Mesaj</label>
+                                            <textarea class="form-control" name="Body" rows="5" required>@Model.Body</textarea>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Gönderim Tarihi</label>
+                                            <input type="datetime-local"
+                                                   class="form-control"
+                                                   name="SendAtLocal"
+                                                   value="@Model.SendAtLocal.ToString("yyyy-MM-ddTHH:mm")"
+                                                   required />
+                                        </div>
+
+                                        <button type="submit" class="btn btn-dark">
+                                            Değişiklikleri Kaydet
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('toggleEdit');
+            const editSection = document.getElementById('editSection');
+
+            if (toggleBtn && editSection) {
+                toggleBtn.addEventListener('click', function () {
+                    editSection.classList.toggle('d-none');
+                });
+            }
+        });
+    </script>
+}

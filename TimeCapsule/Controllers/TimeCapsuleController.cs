@@ -3,37 +3,32 @@ using System.Threading.Tasks;
 using Business.Abstract;
 using Business.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace TimeCapsule.Controllers
 {
     public class TimeCapsuleController : Controller
     {
         private readonly ITimeCapsuleService _service;
-        private readonly ILogger<TimeCapsuleController> _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TimeCapsuleController(
-            ITimeCapsuleService service,
-            ILogger<TimeCapsuleController> logger,
-            IHttpContextAccessor httpContextAccessor)
+        public TimeCapsuleController(ITimeCapsuleService service)
         {
             _service = service;
-            _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
         }
+
+        // ===================== CREATE =====================
 
         [HttpGet]
         public IActionResult Create()
         {
+            // Varsayılan olarak şimdi +1 dakika, saniye 0
             var now = DateTime.Now.AddMinutes(1);
-            // saniye ve saliseyi sıfırla
             now = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
 
             var model = new TimeCapsuleCreateDto
             {
                 SendAtLocal = now
             };
+
             return View(model);
         }
 
@@ -46,55 +41,148 @@ namespace TimeCapsule.Controllers
 
             try
             {
-                // Eğer 6 ay / 12 ay preset seçilmişse:
-                if (!string.IsNullOrEmpty(presetMonths) && int.TryParse(presetMonths, out var m) && m > 0)
+                // Eğer hazır süre seçildiyse, tarihi onunla override et
+                if (!string.IsNullOrEmpty(presetMonths) &&
+                    int.TryParse(presetMonths, out var m) && m > 0)
                 {
-                    model.SendAtLocal = DateTime.Now.AddMonths(m);
+                    var baseTime = DateTime.Now;
+                    baseTime = new DateTime(baseTime.Year, baseTime.Month, baseTime.Day,
+                                            baseTime.Hour, baseTime.Minute, 0);
+
+                    model.SendAtLocal = baseTime.AddMonths(m);
                 }
 
-                // değilse, model.SendAtLocal zaten takvimden geliyor olmalı
-                // (dto'da [Required] ise kullanıcı tarih seçmek zorunda)
+                var lookupId = await _service.CreateAsync(model);
 
-                var baseUrl = $"{Request.Scheme}://{Request.Host}";
-                var (previewUrl, cancelUrl) = await _service.CreateAsync(model, baseUrl);
-
-                ViewBag.PreviewUrl = previewUrl;
-                ViewBag.CancelUrl = cancelUrl;
                 ViewBag.Success = "Mektubun zaman kapsülüne kaydedildi.";
+                ViewBag.LookupId = lookupId;
 
-                return View(new TimeCapsuleCreateDto());
+                // Formu temizleyip tekrar başlangıç tarihiyle dön
+                var now = DateTime.Now.AddMinutes(1);
+                now = new DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, 0);
+
+                var emptyModel = new TimeCapsuleCreateDto
+                {
+                    SendAtLocal = now
+                };
+
+                ModelState.Clear();
+                return View(emptyModel);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "TimeCapsule oluşturulurken hata");
-                ModelState.AddModelError("", ex.Message);
+                ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
         }
 
+        // ===================== MANAGE / LOOKUP =====================
+
         [HttpGet]
-        public async Task<IActionResult> Preview(string token)
+        public IActionResult Manage()
         {
+            if (TempData["Message"] != null)
+            {
+                ViewBag.Message = TempData["Message"];
+            }
+
+            return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Lookup(string lookupId)
+        {
+            if (string.IsNullOrWhiteSpace(lookupId))
+            {
+                ModelState.AddModelError(string.Empty, "Lütfen geçerli bir Kapsül ID girin.");
+                return View("Manage");
+            }
+
+            var vm = await _service.GetManageInfoAsync(lookupId.Trim());
+            if (vm == null)
+            {
+                ModelState.AddModelError(string.Empty, "Bu ID ile eşleşen kapsül bulunamadı.");
+                return View("Manage");
+            }
+
+            return View("Manage", vm);
+        }
+        // ===================== UPDATE =====================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Update(TimeCapsuleUpdateDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.LookupId))
+            {
+                TempData["Message"] = "Geçersiz Kapsül ID.";
+                return RedirectToAction("Manage");
+            }
+
             try
             {
-                var (subject, body) = await _service.GetPreviewAsync(token);
-                ViewBag.Subject = subject;
-                ViewBag.Body = body;
-                return View();
+                var success = await _service.UpdateAsync(dto);
+                TempData["Message"] = success
+                    ? "Kapsül bilgileri güncellendi."
+                    : "Kapsül güncellenemedi (bulunamadı, gönderilmiş veya iptal edilmiş olabilir).";
             }
             catch (Exception ex)
             {
-                _logger.LogWarning(ex, "Preview token geçersiz");
-                return View("Error", "Önizleme linki geçersiz veya mesaj iptal edilmiş.");
+                TempData["Message"] = ex.Message;
             }
+
+            // Aynı ID ile tekrar lookup yapalım ki güncel veriyi göstersin
+            return RedirectToAction("Lookup", new { lookupId = dto.LookupId });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Cancel(string token)
+
+        // ===================== CANCEL =====================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Cancel(string lookupId)
         {
-            var success = await _service.CancelAsync(token);
-            return View(success);
+            if (string.IsNullOrWhiteSpace(lookupId))
+            {
+                TempData["Message"] = "Geçersiz Kapsül ID.";
+                return RedirectToAction("Manage");
+            }
+
+            var success = await _service.CancelAsync(lookupId.Trim());
+
+            TempData["Message"] = success
+                ? "Kapsül başarıyla iptal edildi."
+                : "Kapsül iptal edilemedi (bulunamadı, gönderilmiş veya zaten iptal edilmiş olabilir).";
+
+            return RedirectToAction("Manage");
+        }
+
+        // ===================== UPDATE SCHEDULE =====================
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateSchedule(string lookupId, DateTime newSendAtLocal)
+        {
+            if (string.IsNullOrWhiteSpace(lookupId))
+            {
+                TempData["Message"] = "Geçersiz Kapsül ID.";
+                return RedirectToAction("Manage");
+            }
+
+            try
+            {
+                var success = await _service.UpdateScheduleAsync(lookupId.Trim(), newSendAtLocal);
+
+                TempData["Message"] = success
+                    ? "Gönderim tarihi güncellendi."
+                    : "Tarih güncellenemedi (kapsül aktif değil veya bulunamadı).";
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = ex.Message;
+            }
+
+            return RedirectToAction("Manage");
         }
     }
-
 }
