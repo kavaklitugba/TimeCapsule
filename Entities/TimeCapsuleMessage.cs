@@ -20,7 +20,7 @@
         public byte[] EncryptedBody { get; set; }
         public byte[] BodyIv { get; set; }
 
-        // Hash'ler (PII'yi düz tutmamak için)
+        // Hash'ler
         public byte[] SenderEmailHash { get; set; }
         public byte[] RecipientEmailHash { get; set; }
         public byte[] SubjectHash { get; set; }

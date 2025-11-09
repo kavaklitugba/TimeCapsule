@@ -44,7 +44,7 @@ namespace Business.Concrete
                     IsBodyHtml = true
                 };
 
-                // Yanıt adresi istemiyorsak:
+                // Yanıt adresi temizlemek için
                 message.ReplyToList.Clear(); // reply direkt göndericiye gider ama uyarı koyuyoruz
 
                 message.To.Add(toEmail);

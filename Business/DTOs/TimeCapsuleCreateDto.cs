@@ -10,7 +10,7 @@ namespace Business.DTOs
     {
         public string SenderEmail { get; set; }
         public string RecipientEmail { get; set; }
-        public string Subject { get; set; }
+        public string? Subject { get; set; }
         public string Body { get; set; }
 
         public DateTime SendAtLocal { get; set; } // Formdan gelen (kullanıcı saati)

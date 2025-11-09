@@ -52,7 +52,7 @@ namespace Business.Concrete
 
             var sendAtUtc = dto.SendAtLocal.ToUniversalTime();
 
-            // Encrypt (tuple dönen versiyona göre)
+            // Encrypt
             var (senderCipher, senderIv) = _crypto.Encrypt(dto.SenderEmail);
             var (recipientCipher, recipientIv) = _crypto.Encrypt(dto.RecipientEmail);
             var (subjectCipher, subjectIv) = _crypto.Encrypt(dto.Subject ?? string.Empty);

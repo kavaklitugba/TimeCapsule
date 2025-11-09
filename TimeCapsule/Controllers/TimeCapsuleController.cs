@@ -1,8 +1,10 @@
-﻿using System;
-using System.Threading.Tasks;
-using Business.Abstract;
+﻿using Business.Abstract;
 using Business.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using TimeCapsule.Models;
 
 namespace TimeCapsule.Controllers
 {
@@ -183,6 +185,15 @@ namespace TimeCapsule.Controllers
             }
 
             return RedirectToAction("Manage");
+        }
+
+
+        // ===================== ERROR =====================
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

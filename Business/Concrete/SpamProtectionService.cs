@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Business.Abstract;
-using DataAccess.Concrete; // senin AppDbContext hangi namespace'teyse onu kullan
+using DataAccess.Concrete;
 using Microsoft.EntityFrameworkCore;
 
 namespace Business.Concrete
@@ -12,8 +12,8 @@ namespace Business.Concrete
         private readonly AppDbContext _context;
         private readonly IHashService _hash;
 
-        // İsteğine göre günlük limit
-        private const int DailyLimitPerSender = 15;
+        //günlük limit
+        private const int DailyLimitPerSender = 10;
 
         public SpamProtectionService(AppDbContext context, IHashService hash)
         {
@@ -32,7 +32,7 @@ namespace Business.Concrete
             var todayUtc = DateTime.UtcNow.Date;
             var tomorrowUtc = todayUtc.AddDays(1);
 
-            // EF Core 9, byte[] SequenceEqual'ı SQL'e çevirebiliyor.
+            
             var count = await _context.TimeCapsuleMessages
                 .CountAsync(x =>
                     x.SenderEmailHash != null &&

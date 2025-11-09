@@ -15,7 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
-// HttpContextAccessor (bazý yerlerde lazým olabilir)
+// HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 // ===== DI KAYITLARI =====
 // Repository
@@ -48,7 +48,7 @@ var app = builder.Build();
 // ===== PIPELINE =====
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/TimeCapsule/Error");
     app.UseHsts();
 }
 
