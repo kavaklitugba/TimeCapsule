@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TimeCapsule</title>
+    <link rel="shortcut icon" href="~/img/time-capsule.png" type="image/png">
+
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -18,15 +20,14 @@
         => currentController == controller && currentAction == action ? "active" : "";
     }
 
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-dark navbar-glass shadow-sm">
-            <div class="container">
-                <a class="navbar-brand fw-semibold d-flex align-items-center"
+    <header class="topbar-wrap">
+        <nav class="navbar navbar-expand-lg navbar-tc">
+            <div class="container navbar-tc-container">
+                <a class="brand"
                    asp-area=""
                    asp-controller="TimeCapsule"
                    asp-action="Create">
-                    <span class="logo-dot me-1"></span>
-                    Time<span class="text-primary">Capsule</span>
+                    <img src="~/img/logo5.png" alt="TimeCapsule" class="brand-logo" />
                 </a>
 
                 <button class="navbar-toggler border-0" type="button"
@@ -36,25 +37,22 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="mainNav">
-                    <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-                        <li class="nav-item">
-                            <a class="nav-link nav-pill @(IsActive("TimeCapsule", "Create"))"
-                               asp-area=""
-                               asp-controller="TimeCapsule"
-                               asp-action="Create">
-                                Gönder
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link nav-pill @(IsActive("TimeCapsule", "Manage"))"
-                               asp-area=""
-                               asp-controller="TimeCapsule"
-                               asp-action="Manage">
-                                Sorgula
-                            </a>
-                        </li>
-                    </ul>
+                <div class="collapse navbar-collapse justify-content-end" id="mainNav">
+                    <div class="nav-actions ms-lg-auto">
+                        <a class="btn btn-tc-link @(IsActive("TimeCapsule", "Manage"))"
+                           asp-area=""
+                           asp-controller="TimeCapsule"
+                           asp-action="Manage">
+                            Sorgula
+                        </a>
+
+                        <a class="btn btn-soft @(IsActive("TimeCapsule", "Create"))"
+                           asp-area=""
+                           asp-controller="TimeCapsule"
+                           asp-action="Create">
+                            Yeni Mektup
+                        </a>
+                    </div>
                 </div>
             </div>
         </nav>

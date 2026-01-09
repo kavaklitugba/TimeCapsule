@@ -9,84 +9,49 @@
     <div class="row justify-content-center">
         <div class="col-lg-7">
 
-            <div class="card shadow-lg border-0 rounded-4">
-                <div class="card-header bg-dark text-light rounded-top-4">
+            <div class="card tc-card shadow-sm">
+                <div class="tc-card-header">
                     <h3 class="mb-0">Geleceğe Mektup</h3>
-                    <small class="text-secondary">Bugünden yaz, seçtiğin tarihte mail olarak gönderilsin.</small>
+                    <small>Bugünden yaz, seçtiğin tarihte mail olarak gönderilsin.</small>
                 </div>
+
                 <div class="card-body p-4">
 
-                    @* Başarılı kayıt sonrası mesaj *@
                     @if (ViewBag.Success != null)
                     {
                         <div class="alert alert-success">
                             <div>@ViewBag.Success</div>
-
-                            @if (ViewBag.LookupId != null)
+                            @if (ViewBag.CapsuleId != null)
                             {
-                                <hr />
-                                <div>
-                                    <strong>Kapsül ID:</strong>
-                                    <code>@ViewBag.LookupId</code>
+                                <div class="mt-2 small">
+                                    <strong>Kapsül ID:</strong> <span class="text-monospace">@ViewBag.CapsuleId</span>
                                 </div>
-                                <small class="text-muted">
-                                    Bu ID’yi güvenli bir yerde sakla. Gelecekte kapsülünü
-                                    <a asp-controller="TimeCapsule" asp-action="Lookup"
-                                       asp-route-lookupId="@ViewBag.LookupId" target="_blank">Kapsül Yönetim</a>
-                                    sayfasında bu ID ile sorgulayabilir, iptal edebilir veya tarihini güncelleyebilirsin.
-                                </small>
                             }
                         </div>
                     }
 
-                    @* Validation hataları *@
-                    @if (!ViewData.ModelState.IsValid)
-                    {
-                        <div class="alert alert-danger">
-                            @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                            {
-                                <div>@err.ErrorMessage</div>
-                            }
-                        </div>
-                    }
-
-                    <form asp-action="Create" method="post">
-                        @Html.AntiForgeryToken()
+                    <form asp-action="Create" method="post" class="needs-validation" novalidate>
 
                         <div class="mb-3">
                             <label class="form-label">Gönderen E-posta</label>
-                            <input asp-for="SenderEmail"
-                                   type="email"
-                                   class="form-control"
-                                   placeholder="sen@gmail.com"
-                                   required />
+                            <input asp-for="SenderEmail" type="email" class="form-control" placeholder="sen@gmail.com" required />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Alıcı E-posta</label>
-                            <input asp-for="RecipientEmail"
-                                   type="email"
-                                   class="form-control"
-                                   placeholder="gelecekteki.sen@gmail.com"
-                                   required />
+                            <input asp-for="RecipientEmail" type="email" class="form-control" placeholder="gelecekteki.sen@gmail.com" required />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Konu (opsiyonel)</label>
-                            <input asp-for="Subject"
-                                   class="form-control"
-                                   placeholder="Geleceğe mektup..." />
+                            <input asp-for="Subject" type="text" class="form-control" placeholder="Geleceğe mektup..." />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label d-block">Gönderim Tarihi</label>
-                            <div class="mb-2">
-                                <small class="text-muted ">
-                                    İstersen hazır sürelerden birini seç; istersen alttaki alandan tam tarih &amp; saati belirle.
-                                </small>
-                            </div>
+                            <label class="form-label">Gönderim Tarihi</label>
+
                             <div class="d-grid gap-2 mb-2">
-                                <div class="btn-group d-flex flex-wrap justify-content-between" role="group" aria-label="Hazır süreler">
+                                <div class="btn-group d-flex flex-wrap justify-content-between tc-preset" role="group" aria-label="Hazır süreler">
                                     <input type="radio" class="btn-check" name="presetMonths" id="m3" value="3" autocomplete="off">
                                     <label class="btn btn-outline-dark btn-sm flex-fill" for="m3">3 Ay</label>
 
@@ -110,37 +75,22 @@
                                 </div>
                             </div>
 
-                            <input asp-for="SendAtLocal"
-                                   type="datetime-local"
-                                   class="form-control"
-                                   id="sendAtInput"
-                                   required />
-
-
+                            <input asp-for="SendAtLocal" type="datetime-local" class="form-control" id="sendAtInput" required />
                         </div>
-
 
                         <div class="mb-3">
-                            <label class="form-label">Mesajın</label>
-                            <textarea asp-for="Body"
-                                      rows="7"
-                                      class="form-control"
-                                      placeholder="Geleceğe ne söylemek istersin?"
-                                      required></textarea>
+                            <label class="form-label">Mesaj</label>
+                            <textarea asp-for="Body" class="form-control" rows="6" placeholder="Gelecekteki kendine yaz..."></textarea>
                         </div>
 
-                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mt-4">
-
-                            <div class="d-flex align-items-start text-muted small secure-hint">
-                                <div class="secure-dot me-2 mt-1"></div>
-                                <div>
-                                    İçerik şifrelenmiş olarak saklanır; 
-                                    seçtiğiniz tarihte sistem tarafından çözüldükten sonra alıcıya iletilir.
-                                </div>
+                        <div class="tc-form-footer">
+                            <div class="tc-hint">
+                                <span class="secure-dot"></span>
+                                Girilen tüm bilgiler şifreli olarak saklanmaktadır, sadece seçtiğin tarihte çözümlenip alıcıya iletilir.
                             </div>
 
-                            <button type="submit" class="btn capsule-submit-btn px-4 py-2">
-                                <span>Zaman Kapsülüne Kaydet</span>
+                            <button type="submit" class="btn capsule-submit-btn">
+                                Zaman Kapsülüne Kaydet
                             </button>
                         </div>
 
@@ -154,45 +104,31 @@
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const sendAtInput = document.getElementById('sendAtInput');
-
-            // Sayfa açıldığında bugünle doldur (modelden gelmiyorsa)
-            if (sendAtInput && !sendAtInput.value) {
-                const now = new Date();
-                now.setSeconds(0, 0);
-                sendAtInput.value = now.toISOString().slice(0, 16); // yyyy-MM-ddTHH:mm
-            }
-
-            // Preset ay seçilince tarihi otomatik ayarla
+        (function () {
+            const sendAtInput = document.getElementById("sendAtInput");
             const radios = document.querySelectorAll('input[name="presetMonths"]');
 
+            function pad(n) { return n < 10 ? "0" + n : n; }
+
+            function toLocalDatetimeValue(date) {
+                const yyyy = date.getFullYear();
+                const mm = pad(date.getMonth() + 1);
+                const dd = pad(date.getDate());
+                const hh = pad(date.getHours());
+                const mi = pad(date.getMinutes());
+                return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+            }
+
             radios.forEach(r => {
-                r.addEventListener('change', function () {
-                    if (!sendAtInput) return;
-
-                    if (!this.value) {
-                        // "Tarih Seç" seçildiyse: elle düzenlemeye izin ver, input'u elle bırak.
-                        return;
-                    }
-
-                    const monthsToAdd = parseInt(this.value);
-                    if (isNaN(monthsToAdd)) return;
-
-                    const base = new Date();
-                    base.setSeconds(0, 0);
-                    base.setMonth(base.getMonth() + monthsToAdd);
-
-                    // yyyy-MM-ddTHH:mm formatı
-                    const yyyy = base.getFullYear();
-                    const mm = String(base.getMonth() + 1).padStart(2, '0');
-                    const dd = String(base.getDate()).padStart(2, '0');
-                    const hh = String(base.getHours()).padStart(2, '0');
-                    const min = String(base.getMinutes()).padStart(2, '0');
-
-                    sendAtInput.value = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+                r.addEventListener("change", function () {
+                    const val = this.value;
+                    if (!val) return;
+                    const months = parseInt(val);
+                    const d = new Date();
+                    d.setMonth(d.getMonth() + months);
+                    sendAtInput.value = toLocalDatetimeValue(d);
                 });
             });
-        });
+        })();
     </script>
 }

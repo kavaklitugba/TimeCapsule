@@ -1,181 +1,358 @@
+/* =========================================================
+   TIMECAPSULE – CLEAN & STABLE THEME
+   (Teal ana renk + minik turuncu vurgu)
+   ========================================================= */
+
+/* ---------------- BASE ---------------- */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
-body {
-  margin-bottom: 60px;
-}
-
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
-}
-
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
-}
-
-/* Üst navbar için soft glass / gradient görünüm */
-.navbar-glass {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-/* Brand yanýndaki küçük nokta */
-.logo-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #0d6efd, #6610f2);
-    display: inline-block;
-}
-
-/* Menü item'larýný pill þeklinde yap */
-.nav-pill {
-    padding-inline: 1rem;
-    padding-block: .4rem;
-    border-radius: 999px;
-    transition: all 0.18s ease;
-    color: #343a40 !important;
-    font-weight: 500;
-}
-
-    .nav-pill:hover {
-        background: rgba(13,110,253,0.08);
-        color: #0d6efd !important;
-    }
-
-    /* Aktif sayfa vurgusu */
-    .nav-pill.active {
-        background: #0d6efd;
-        color: #fff !important;
-        box-shadow: 0 4px 10px rgba(13,110,253,0.25);
-    }
-
-/* Sayfa gövdesini biraz aþaðýdan baþlat */
-.page-wrapper {
-    padding-top: 1.5rem;
-}
-
-/* Footer */
-.footer-soft {
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    padding: 1rem 0 1.5rem;
-    background: #fff;
-}
 html, body {
     height: 100%;
     margin: 0;
     padding: 0;
 }
 
+:root {
+    --tc-main: #0f6f8c;
+    --tc-main-dark: #0b5f78;
+    --tc-main-soft: #e6f2f6;
+    --tc-header: #095a72;
+    --tc-accent: #ff751f;
+    --tc-text: #0f172a;
+    --tc-muted: #64748b;
+    /* senin dosyada rgba(...,18) gibi hatalý yazýlmýþ, düzelttim */
+    --tc-border: rgba(15,111,140,.18);
+}
+
 body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background: linear-gradient(180deg, #f7fafc 0%, #f3f8fb 100%);
+    color: var(--tc-text);
+    font-weight: 400;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans";
 }
 
 .page-wrapper {
-    flex: 1; /* footer'ý alta sabitler, boþluðu kaldýrýr */
+    flex: 1;
+    padding-top: 24px;
 }
 
-/* Footer düzeltmesi */
-.footer-soft {
-    margin: 0;
-    padding: 0.8rem 0 1rem;
-    background: #fff;
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-}
-/* Güvenlik notu noktasý */
-.secure-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, #0d6efd, #20c997);
-    box-shadow: 0 0 8px rgba(13, 110, 253, 0.4);
+/* Focus ring */
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus,
+.form-control:focus, .form-check-input:focus, .nav-link:focus {
+    box-shadow: 0 0 0 .12rem #fff, 0 0 0 .32rem rgba(15,111,140,.24) !important;
 }
 
-/* Küçük yazý biraz daha okunaklý */
-.secure-hint {
-    max-width: 380px;
-    line-height: 1.4;
-}
-
-/* Kapsül gönderme butonu */
-.capsule-submit-btn {
-    border-radius: 999px;
-    background: #111827;
-    color: #fff;
+/* Headings */
+h1, h2, h3, h4, h5 {
     font-weight: 600;
-    border: none;
-    min-width: 240px;
-    text-align: center;
-    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.35);
-    transition: all 0.18s ease;
-    letter-spacing: 0.01em;
+    letter-spacing: .15px;
 }
 
-    .capsule-submit-btn:hover {
-        background: #0d6efd;
-        box-shadow: 0 14px 32px rgba(13, 110, 253, 0.38);
+/* =========================================================
+   TOP BAR (SENÝN LAYOUT ÝLE %100 UYUMLU)
+   Header: <header class="topbar-wrap">
+   Nav:    <nav class="topbar navbar ...">
+   Links:  <ul class="navbar-nav ... nav-modern"> <a class="nav-link ...">Sorgula</a>
+   CTA:    <a class="btn btn-soft">Yeni Mektup</a>
+   ========================================================= */
+
+.topbar-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--tc-border);
+}
+
+/* Navbar padding / hizalama */
+.topbar.navbar {
+    padding-top: .85rem;
+    padding-bottom: .85rem;
+}
+
+/* Logo */
+.topbar-wrap .brand img {
+    height: 80px;
+    width: auto;
+    display: block;
+}
+
+/* Nav list */
+.nav-modern {
+    gap: 10px;
+}
+
+/* --- SORGULA (nav-link’i buton gibi yap) --- */
+.topbar-wrap .nav-actions .btn-tc-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: .58rem 1.05rem !important;
+    border-radius: 16px !important;
+    border: 1px solid rgba(15,111,140,.35) !important;
+    background: #fff !important;
+    color: var(--tc-main) !important;
+    font-weight: 500 !important;
+    letter-spacing: .15px !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+    transition: all .15s ease !important;
+}
+
+    /* hover/focus/active: yazý ASLA siyaha dönmesin */
+    .topbar-wrap .nav-actions .btn-tc-link:hover,
+    .topbar-wrap .nav-actions .btn-tc-link:focus,
+    .topbar-wrap .nav-actions .btn-tc-link:active {
+        background: var(--tc-main-soft) !important;
+        border-color: rgba(15,111,140,.55) !important;
+        color: var(--tc-main) !important;
+    }
+
+    /* aktif sayfa */
+    .topbar-wrap .nav-actions .btn-tc-link.active {
+        background: var(--tc-main) !important;
+        border-color: var(--tc-main) !important;
+        color: #fff !important;
+        box-shadow: 0 10px 24px rgba(15,111,140,.18) !important;
+        position: relative;
+    }
+
+        /* active için turuncu minik nokta */
+        .topbar-wrap .nav-actions .btn-tc-link.active::after {
+            content: "";
+            position: absolute;
+            right: 10px;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--tc-accent);
+        }
+
+/* --- YENÝ MEKTUP (btn btn-soft) --- */
+.topbar-wrap a.btn.btn-soft {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: .60rem 1.15rem !important;
+    border-radius: 18px !important;
+    background: linear-gradient(135deg, var(--tc-main) 0%, var(--tc-main-dark) 100%) !important;
+    border: 1px solid rgba(15,111,140,.20) !important;
+    color: #fff !important;
+    font-weight: 500 !important;
+    letter-spacing: .2px !important;
+    text-decoration: none !important;
+    box-shadow: 0 12px 26px rgba(15,111,140,.22) !important;
+    transition: all .15s ease !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+/* turuncu mikro detay: sol kenarda mini çizgi (BOZMAZ, modern durur) */
+.topbar-wrap a.btn.btn-soft {
+    border-bottom: 3px solid var(--tc-accent) !important;
+}
+
+    /* hover */
+    .topbar-wrap a.btn.btn-soft:hover,
+    .topbar-wrap a.btn.btn-soft:focus,
+    .topbar-wrap a.btn.btn-soft:active {
+        transform: translateY(-1px) !important;
+        background: linear-gradient(135deg, var(--tc-main-dark) 0%, #094e62 100%) !important;
+        color: #fff !important;
+        box-shadow: 0 16px 34px rgba(15,111,140,.30) !important;
+    }
+
+    /* Bootstrap bazen hover-color basar -> kilit */
+    .topbar-wrap a.btn.btn-soft,
+    .topbar-wrap a.btn.btn-soft:hover,
+    .topbar-wrap a.btn.btn-soft:focus,
+    .topbar-wrap a.btn.btn-soft:active {
+        --bs-btn-color: #fff;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-active-color: #fff;
+    }
+
+/* =========================================================
+   CARD / FORM (SENÝN GÜZEL DEDÝÐÝN KISIMLAR)
+   ========================================================= */
+
+.tc-card {
+    border: 1px solid var(--tc-border);
+    border-radius: 22px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 12px 32px rgba(15,111,140,.10), 0 2px 6px rgba(15,111,140,.06);
+}
+
+.tc-card-header {
+    background: linear-gradient(180deg, var(--tc-main-dark) 0%, var(--tc-header) 100%);
+    color: #fff !important;
+    padding: 18px 22px;
+    position: relative;
+}
+
+    .tc-card-header::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 3px;
+        background: var(--tc-accent);
+        opacity: .85;
+    }
+
+    .tc-card-header h3 {
+        margin: 0;
+        font-weight: 600;
+        letter-spacing: .25px;
+    }
+
+    .tc-card-header small {
+        display: block;
+        margin-top: 4px;
+        color: rgba(255,255,255,.85) !important;
+        font-weight: 400;
+    }
+
+.form-control {
+    border-radius: 14px;
+    border-color: rgba(15,111,140,.22);
+    padding: .7rem .9rem;
+    background: #fff;
+}
+
+    .form-control:focus {
+        border-color: var(--tc-main);
+        box-shadow: 0 0 0 .2rem rgba(15,111,140,.15);
+    }
+
+/* Preset’ler: senin markup btn-outline-dark, bunu kapsayýcýyla hedefleyelim */
+.tc-preset .btn {
+    position: relative;
+    border-radius: 10px !important;
+    margin-right: 5px;
+    font-weight: 500;
+    background: #fff;
+}
+
+.tc-preset .btn-check:checked + .btn {
+    background: var(--tc-main-soft);
+    border-color: var(--tc-main);
+    color: var(--tc-main);
+}
+
+    /* aktif preset turuncu nokta */
+    .tc-preset .btn-check:checked + .btn::after {
+        content: "";
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--tc-accent);
+    }
+
+/* Footer hint + submit ayný hizada */
+.tc-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: nowrap;
+    margin-top: 8px;
+    padding-top: 16px;
+    border-top: 1px dashed rgba(15,111,140,.18);
+}
+
+.tc-hint {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--tc-muted);
+    font-size: .92rem;
+    font-weight: 500;
+    line-height: 1.25;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.secure-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--tc-main);
+    box-shadow: 0 0 0 5px rgba(15,111,140,.15);
+    flex: 0 0 auto;
+}
+
+.capsule-submit-btn {
+    background: linear-gradient(135deg, var(--tc-main) 0%, var(--tc-main-dark) 100%) !important;
+    color: #fff !important;
+    font-weight: 500 !important;
+    letter-spacing: .2px;
+    border-radius: 16px;
+    border: none;
+    padding: .7rem 1.2rem;
+    white-space: nowrap;
+    box-shadow: 0 12px 28px rgba(15,111,140,.35);
+    transition: all .15s ease;
+    position: relative;
+    overflow: hidden;
+    flex: 0 0 auto;
+    /* minik turuncu vurgu */
+    border-bottom: 3px solid var(--tc-accent);
+}
+
+    .capsule-submit-btn:hover,
+    .capsule-submit-btn:focus,
+    .capsule-submit-btn:active {
+        background: linear-gradient(135deg, var(--tc-main-dark) 0%, #094e62 100%) !important;
+        color: #fff !important;
         transform: translateY(-1px);
     }
 
-    .capsule-submit-btn:active {
-        transform: translateY(1px);
-        box-shadow: 0 6px 14px rgba(15, 23, 42, 0.25);
+/* Footer */
+.footer-soft {
+    padding: 24px 0;
+    border-top: 1px solid rgba(15,23,42,.06);
+    margin-top: 60px;
+    background: #fff;
+}
+
+/* Mobile */
+@media (max-width: 991.98px) {
+    .topbar-wrap .brand img {
+        height: 64px;
     }
-/* Uzun renkli çubuðu tamamen KALDIR */
-.card-header.bg-dark::before {
-    content: none !important;
-}
 
-/* Header sade, koyu blok kalsýn */
-.card-header.bg-dark {
-    background: #1e2530; /* daha yumuþak lacivert-gri */
-    color: #f9fafb;
-    padding: 1.35rem 1.75rem 1.1rem;
-    border-bottom: 1px solid rgba(148, 163, 253, 0.12);
-    border-top-left-radius: 18px !important;
-    border-top-right-radius: 18px !important;
-    box-shadow: none;
-}
+    .tc-form-footer {
+        flex-wrap: wrap;
+        align-items: stretch;
+    }
 
-/* Kartýn genel görünümü */
-.card.shadow-lg.border-0.rounded-4 {
-    border-radius: 18px !important;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.13) !important;
-}
-
-/* Baþlýk & alt metin ayný kalsýn */
-.card-header.bg-dark h3 {
-    font-weight: 700;
-    font-size: 1.55rem;
-    margin: 0 0 0.1rem;
-}
-
-.card-header.bg-dark small {
-    font-size: 0.92rem;
-    color: #9ca3af;
-}
-.pd-bt-1{
-    padding-bottom:1rem !important;
-    padding-top:1rem !important;
+    .capsule-submit-btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
