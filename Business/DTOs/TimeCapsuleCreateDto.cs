@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,9 @@ namespace Business.DTOs
         public string Body { get; set; }
 
         public DateTime SendAtLocal { get; set; } // Formdan gelen (kullanıcı saati)
+
+        public IFormFile? ImageFile { get; set; }   // Yüklenen dosya (Create)
+        public string? ImagePath { get; set; }      // Kaydedilmiş path (göstermek istersen)
     }
 
 }

@@ -19,18 +19,45 @@
 
                     @if (ViewBag.Success != null)
                     {
-                        <div class="alert alert-success">
-                            <div>@ViewBag.Success</div>
-                            @if (ViewBag.CapsuleId != null)
+                        <div class="alert alert-success tc-success-box">
+
+                            <div class="tc-success-title">
+                                <i class="bi bi-check-circle-fill"></i>
+                                @ViewBag.Success
+                            </div>
+                            @if (ViewBag.LookupId != null)
                             {
-                                <div class="mt-2 small">
-                                    <strong>Kapsül ID:</strong> <span class="text-monospace">@ViewBag.CapsuleId</span>
+                                <div class="tc-success-id">
+                                    <span class="tc-success-label">Kapsül ID</span>
+
+                                    <span class="tc-success-code" id="capsuleLookupId">
+                                        @ViewBag.LookupId
+                                    </span>
+
+                                    <button id="btnCopyLookupId" type="button" class="tc-copy-btn" onclick="copyLookupId()">
+                                        Kopyala
+                                    </button>
+
+                                    <a class="tc-manage-btn" target="_blank"
+                                       href="@Url.Action("Lookup", "TimeCapsule", new { lookupId = ViewBag.LookupId })">
+                                        Mektubu Yönet
+                                    </a>
                                 </div>
+
                             }
+
                         </div>
                     }
 
-                    <form asp-action="Create" method="post" class="needs-validation" novalidate>
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger tc-error-box">
+                            <div class="tc-error-title">İşlem tamamlanamadı!</div>
+                            <div class="tc-error-text">@ViewBag.Error</div>
+                        </div>
+                    }
+
+                    <form asp-action="Create" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
 
                         <div class="mb-3">
                             <label class="form-label">Gönderen E-posta</label>
@@ -83,6 +110,12 @@
                             <textarea asp-for="Body" class="form-control" rows="6" placeholder="Gelecekteki kendine yaz..."></textarea>
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Resim (opsiyonel)</label>
+                            <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                            <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        </div>
+
                         <div class="tc-form-footer">
                             <div class="tc-hint">
                                 <span class="secure-dot"></span>
@@ -131,4 +164,24 @@
             });
         })();
     </script>
+    <script>
+        function copyLookupId() {
+          const el = document.getElementById("capsuleLookupId");
+          if (!el) return;
+
+          const text = (el.innerText || el.textContent || "").trim();
+          if (!text) return;
+
+          navigator.clipboard.writeText(text).then(() => {
+            // butonu id ile yakala (istersen)
+            const btn = document.getElementById("btnCopyLookupId");
+            if (!btn) return;
+
+            const oldText = btn.innerText;
+            btn.innerText = "Kopyalandı ✓";
+            setTimeout(() => btn.innerText = oldText, 5000);
+          });
+        }
+    </script>
+
 }

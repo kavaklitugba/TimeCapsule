@@ -32,5 +32,8 @@
 
         // Durum
         public bool IsActive { get; set; }
+
+        //Resim
+        public string ImagePath { get; set; }
     }
 }

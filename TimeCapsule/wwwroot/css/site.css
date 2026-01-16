@@ -35,6 +35,9 @@ html, body {
     --tc-muted: #64748b;
     /* senin dosyada rgba(...,18) gibi hatalý yazýlmýþ, düzelttim */
     --tc-border: rgba(15,111,140,.18);
+    --tc-danger: #e24b4b;
+    --tc-danger-dark: #c73c3c;
+    --tc-danger-soft: rgba(226,75,75,.10);
 }
 
 body {
@@ -355,4 +358,323 @@ h1, h2, h3, h4, h5 {
         width: 100%;
         justify-content: center;
     }
+}
+
+/* Ortak buton tabaný */
+.tc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: .58rem 1.05rem;
+    border-radius: 16px;
+    font-weight: 500;
+    letter-spacing: .15px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    background: #fff;
+    transition: all .15s ease;
+    user-select: none;
+    /* Bootstrap ile birlikte kullanýnca da stabil kalsýn */
+    --bs-btn-padding-x: 0;
+    --bs-btn-padding-y: 0;
+}
+
+    /* Hover’da minik yükselme (topbar ile uyumlu) */
+    .tc-btn:hover {
+        transform: translateY(-1px);
+    }
+
+    /* Focus ring: senin global focus stilinle uyumlu */
+    .tc-btn:focus,
+    .tc-btn:active:focus {
+        box-shadow: 0 0 0 .12rem #fff, 0 0 0 .32rem rgba(15,111,140,.24) !important;
+    }
+
+    /* Disabled */
+    .tc-btn:disabled,
+    .tc-btn.disabled {
+        opacity: .6;
+        pointer-events: none;
+        transform: none;
+    }
+
+/* --- SORGULA (Primary) --- */
+.tc-btn--query {
+    background: linear-gradient(135deg, var(--tc-main) 0%, var(--tc-main-dark) 100%);
+    color: #fff !important;
+    border-color: rgba(15,111,140,.20);
+    box-shadow: 0 12px 26px rgba(15,111,140,.22);
+    position: relative;
+    overflow: hidden;
+    border-bottom: 3px solid var(--tc-accent); /* turuncu mikro vurgu */
+}
+
+    .tc-btn--query:hover,
+    .tc-btn--query:focus,
+    .tc-btn--query:active {
+        background: linear-gradient(135deg, var(--tc-main-dark) 0%, #094e62 100%);
+        color: #fff !important;
+        box-shadow: 0 16px 34px rgba(15,111,140,.30);
+    }
+
+/* --- DÜZENLE (Soft / Ghost) --- */
+.tc-btn--edit {
+    background: #fff;
+    color: var(--tc-main) !important;
+    border-color: rgba(15,111,140,.35);
+    box-shadow: 0 10px 22px rgba(15,111,140,.08);
+    position: relative;
+}
+
+    .tc-btn--edit:hover,
+    .tc-btn--edit:focus,
+    .tc-btn--edit:active {
+        background: var(--tc-main-soft);
+        border-color: rgba(15,111,140,.55);
+        color: var(--tc-main) !important;
+        box-shadow: 0 14px 26px rgba(15,111,140,.12);
+    }
+
+    /* Düzenle’ye mini turuncu nokta (senin “active dot” mantýðýyla uyumlu) */
+    .tc-btn--edit::after {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--tc-accent);
+        opacity: .85;
+    }
+
+/* --- ÝPTAL ET (Danger outline ama tema ile yumuþak) --- */
+.tc-btn--cancel {
+    background: #fff;
+    color: var(--tc-danger) !important;
+    border-color: rgba(226,75,75,.45);
+    box-shadow: 0 10px 22px rgba(226,75,75,.10);
+}
+
+    .tc-btn--cancel:hover,
+    .tc-btn--cancel:focus,
+    .tc-btn--cancel:active {
+        background: var(--tc-danger-soft);
+        border-color: rgba(226,75,75,.65);
+        color: var(--tc-danger-dark) !important;
+        box-shadow: 0 14px 26px rgba(226,75,75,.16);
+    }
+
+/* Aksiyon butonlarý yan yana ise daha derli toplu dursun */
+.tc-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Mobilde tam geniþlik istersen */
+@media (max-width: 576px) {
+    .tc-actions .tc-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* =========================================================
+   INPUT + SORGULA BUTONU ARASI BOÞLUK FIX
+   (Sadece TimeCapsule lookup alaný)
+   ========================================================= */
+
+/* input-group içindeki boþluklarý sýfýrla */
+.tc-inputgroup {
+    gap: 0 !important;
+}
+
+    /* Input ile butonun birleþik görünmesi */
+    .tc-inputgroup .form-control {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    /* Sorgula butonu inputa yapýþsýn */
+    .tc-inputgroup .tc-btn--query {
+        margin-left: -1px; /* border çakýþmasýný yok eder */
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    /* Hover/focus'ta araya çizgi girmesin */
+    .tc-inputgroup .form-control:focus {
+        position: relative;
+        z-index: 2;
+    }
+
+    .tc-inputgroup .tc-btn--query {
+        position: relative;
+        z-index: 1;
+    }
+
+
+.tc-success-box {
+    border-radius: 16px;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #e9f7fb 0%, #f6fcfe 100%);
+    border: 1px solid rgba(15,111,140,.25);
+}
+
+.tc-success-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #0f6f8c;
+    /*display: flex;*/
+    align-items: center;
+    gap: 8px;
+}
+
+.tc-success-id {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tc-success-label {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.tc-success-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: #ffffff;
+    border: 1px dashed rgba(15,111,140,.4);
+    color: #0f6f8c;
+}
+
+.tc-copy-btn {
+    background: #0f6f8c;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+
+    .tc-copy-btn:hover {
+        background: #0b5c73;
+    }
+
+.tc-success-info {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.tc-manage-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    text-decoration: none;
+    background: #ffffff;
+    color: #0f6f8c;
+    border: 1px solid rgba(15,111,140,.35);
+    transition: all .15s ease;
+}
+
+    .tc-manage-btn:hover {
+        background: rgba(15,111,140,.08);
+        border-color: rgba(15,111,140,.55);
+        color: #0b5c73;
+    }
+
+
+.tc-copy-btn,
+.tc-manage-btn {
+    white-space: nowrap; /* metin iki satýra bölünmesin */
+}
+
+/* =========================================================
+   MANAGE PAGE – MINIMAL PATCH (BOZMAZ)
+   ========================================================= */
+
+.tc-section-title {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--tc-text);
+    letter-spacing: .15px;
+}
+
+.tc-soft-note {
+    font-size: 13px;
+    color: var(--tc-muted);
+    line-height: 1.35;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: rgba(15,111,140,.06);
+    border: 1px dashed rgba(15,111,140,.18);
+}
+
+/* Görsel çerçevesi */
+.tc-image-frame {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid rgba(15,111,140,.18);
+    box-shadow: 0 10px 22px rgba(15,111,140,.06);
+}
+
+.tc-image {
+    display: block;
+    width: 280px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 14px;
+}
+
+/* Ikonlu aksiyon butonlarý */
+.tc-iconbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: .50rem .85rem;
+    border-radius: 14px;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: .15px;
+    background: #fff;
+    border: 1px solid rgba(15,111,140,.28);
+    color: var(--tc-main);
+    transition: all .15s ease;
+}
+
+    .tc-iconbtn:hover {
+        transform: translateY(-1px);
+        background: var(--tc-main-soft);
+        border-color: rgba(15,111,140,.45);
+        color: var(--tc-main);
+    }
+
+.tc-iconbtn--danger {
+    border-color: rgba(226,75,75,.45);
+    color: var(--tc-danger) !important;
+    background: #fff;
+}
+
+    .tc-iconbtn--danger:hover {
+        background: var(--tc-danger-soft);
+        border-color: rgba(226,75,75,.65);
+        color: var(--tc-danger-dark) !important;
+    }
+
+.tc-icon {
+    font-size: 16px;
+    line-height: 1;
 }

@@ -1,10 +1,13 @@
-﻿using System;
-using System.Threading.Tasks;
-using Business.Abstract;
+﻿using Business.Abstract;
 using Business.DTOs;
 using DataAccess.Abstract;
 using Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Threading.Tasks;
 
 namespace Business.Concrete
 {
@@ -16,6 +19,7 @@ namespace Business.Concrete
         private readonly ISpamProtectionService _spam;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<TimeCapsuleService> _logger;
+        private readonly IWebHostEnvironment _env;
 
         private const int DueBatchSize = 100;
 
@@ -25,7 +29,8 @@ namespace Business.Concrete
             IHashService hash,
             ISpamProtectionService spam,
             IEmailSender emailSender,
-            ILogger<TimeCapsuleService> logger)
+            ILogger<TimeCapsuleService> logger,
+            IWebHostEnvironment env)
         {
             _repo = repo;
             _crypto = crypto;
@@ -33,6 +38,7 @@ namespace Business.Concrete
             _spam = spam;
             _emailSender = emailSender;
             _logger = logger;
+            _env = env;
         }
 
         public async Task<string> CreateAsync(TimeCapsuleCreateDto dto)
@@ -52,17 +58,17 @@ namespace Business.Concrete
 
             var sendAtUtc = dto.SendAtLocal.ToUniversalTime();
 
-            // Encrypt
             var (senderCipher, senderIv) = _crypto.Encrypt(dto.SenderEmail);
             var (recipientCipher, recipientIv) = _crypto.Encrypt(dto.RecipientEmail);
             var (subjectCipher, subjectIv) = _crypto.Encrypt(dto.Subject ?? string.Empty);
             var (bodyCipher, bodyIv) = _crypto.Encrypt(dto.Body);
 
-            var lookupId = Guid.NewGuid().ToString("N");
+            var lookupId = LookupIdGenerator.Generate();
 
             var entity = new TimeCapsuleMessage
             {
                 LookupId = lookupId,
+                ImagePath = dto.ImagePath,
 
                 SenderEmailEncrypted = senderCipher,
                 SenderEmailIv = senderIv,
@@ -90,8 +96,25 @@ namespace Business.Concrete
             await _repo.SaveChangesAsync();
 
             _logger.LogInformation("TimeCapsule created. LookupId={LookupId}", lookupId);
-
             return lookupId;
+        }
+
+        public static class LookupIdGenerator
+        {
+            private static readonly char[] _chars =
+                "ABCDEFGHJKLMNPQRSTUVWXYZ23456789".ToCharArray();
+
+            public static string Generate()
+            {
+                var random = RandomNumberGenerator.Create();
+                var buffer = new byte[6];
+                random.GetBytes(buffer);
+
+                string part1 = $"{_chars[buffer[0] % _chars.Length]}{_chars[buffer[1] % _chars.Length]}{_chars[buffer[2] % _chars.Length]}{_chars[buffer[3] % _chars.Length]}";
+                string part2 = $"{_chars[buffer[4] % _chars.Length]}{_chars[buffer[5] % _chars.Length]}{_chars[(buffer[0] + buffer[5]) % _chars.Length]}{_chars[(buffer[1] + buffer[4]) % _chars.Length]}";
+
+                return $"TC-{part1}-{part2}";
+            }
         }
 
         public async Task<TimeCapsuleManageViewModel?> GetManageInfoAsync(string lookupId)
@@ -118,9 +141,11 @@ namespace Business.Concrete
                 SenderEmail = sender,
                 RecipientEmail = recipient,
                 Subject = subject,
-                Body = body
+                Body = body,
+                ImagePath = msg.ImagePath
             };
         }
+
         public async Task<bool> UpdateAsync(TimeCapsuleUpdateDto dto)
         {
             if (dto == null || string.IsNullOrWhiteSpace(dto.LookupId))
@@ -128,7 +153,7 @@ namespace Business.Concrete
 
             var msg = await _repo.GetByLookupIdAsync(dto.LookupId);
             if (msg == null || !msg.IsActive || msg.SentAtUtc.HasValue)
-                return false; // gönderilmiş/iptal kapsül düzenlenmez
+                return false;
 
             if (dto.SendAtLocal <= DateTime.Now)
                 throw new ArgumentException("Gönderim tarihi gelecek bir zaman olmalıdır.");
@@ -138,10 +163,8 @@ namespace Business.Concrete
                 string.IsNullOrWhiteSpace(dto.Body))
                 throw new ArgumentException("Gönderen, alıcı ve mesaj boş olamaz.");
 
-            // Güncel gönderen için spam limiti
             await _spam.CheckOrThrowAsync(dto.SenderEmail);
 
-            // Şifreleme
             var (senderCipher, senderIv) = _crypto.Encrypt(dto.SenderEmail.Trim());
             var (recipientCipher, recipientIv) = _crypto.Encrypt(dto.RecipientEmail.Trim());
             var (subjectCipher, subjectIv) = _crypto.Encrypt(dto.Subject ?? string.Empty);
@@ -149,14 +172,16 @@ namespace Business.Concrete
 
             msg.SenderEmailEncrypted = senderCipher;
             msg.SenderEmailIv = senderIv;
+
             msg.RecipientEmailEncrypted = recipientCipher;
             msg.RecipientEmailIv = recipientIv;
+
             msg.SubjectEncrypted = subjectCipher;
             msg.SubjectIv = subjectIv;
+
             msg.EncryptedBody = bodyCipher;
             msg.BodyIv = bodyIv;
 
-            // Hashler
             var normSender = dto.SenderEmail.Trim().ToLowerInvariant();
             var normRecipient = dto.RecipientEmail.Trim().ToLowerInvariant();
 
@@ -164,15 +189,21 @@ namespace Business.Concrete
             msg.RecipientEmailHash = _hash.ComputeHash(normRecipient);
             msg.SubjectHash = _hash.ComputeHash(dto.Subject ?? string.Empty);
 
-            // Tarih
             msg.SendAtUtc = dto.SendAtLocal.ToUniversalTime();
+
+            // Controller dto.ImagePath'i 3 durumda set ediyor:
+            // - Remove: null
+            // - Yeni dosya: yeni path
+            // - Değişmediyse: mevcut path
+            msg.ImagePath = dto.ImagePath;
 
             await _repo.SaveChangesAsync();
 
-            _logger.LogInformation("TimeCapsule updated. LookupId={LookupId}", dto.LookupId);
+            _logger.LogInformation("TimeCapsule updated. LookupId={LookupId}, ImagePath={ImagePath}",
+                dto.LookupId, msg.ImagePath ?? "NULL");
+
             return true;
         }
-
 
         public async Task<bool> CancelAsync(string lookupId)
         {
@@ -242,21 +273,46 @@ namespace Business.Concrete
 
                     var bodyPlain = _crypto.Decrypt(msg.EncryptedBody, msg.BodyIv);
 
-                    var emailBody = $@"
-                        <p><strong>Gönderen:</strong> {senderEmail}</p>
-                        <hr />
-                        {bodyPlain}
-                        <hr />
-                        <p style=""font-size:12px;color:#777;"">
-                        Bu e-posta <strong>Time Capsule</strong> sistemi üzerinden planlanmış bir geleceğe mektup teslimatıdır.
-                        Lütfen bu e-postaya yanıt vermeyin; bu adres yalnızca gönderim amaçlıdır ve yanıtlar takip edilmez.
-                        </p>";
+                    // --- Mail HTML ---
+                    // Görsel varsa CID ile mailin içine gömüyoruz (Gmail'de sorunsuz)
+                    var cid = $"tcimg_{msg.LookupId}".Replace("-", "").ToLowerInvariant();
+                    var hasImage = !string.IsNullOrWhiteSpace(msg.ImagePath) && File.Exists(GetFullImagePathFromWebRoot(msg.ImagePath));
 
-                    var success = await _emailSender.SendAsync(
-                        recipientEmail,
-                        subject,
-                        emailBody
-                    );
+                    var inlineImgHtml = string.Empty;
+                    if (hasImage)
+                    {
+                        inlineImgHtml = $@"
+                          <div style=""margin-top:16px;"">
+                            <p style=""margin:0 0 8px; font-size:13px; color:#555;""><strong>Görsel:</strong></p>
+                            <img src=""cid:{cid}""
+                                 style=""display:block; max-width:100%; height:auto; border-radius:12px; border:1px solid #e0e6ea;"" />
+                          </div>";
+                    }
+
+                    var emailBody = $@"
+<div style=""font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:1.5;"">
+  <p style=""margin:0 0 10px;""><strong>Gönderen:</strong> {senderEmail}</p>
+  <hr style=""border:none;border-top:1px solid #e6e6e6;margin:12px 0;"" />
+  <div style=""white-space:pre-wrap;"">{bodyPlain}</div>
+  {inlineImgHtml}
+  <hr style=""border:none;border-top:1px solid #e6e6e6;margin:12px 0;"" />
+  <p style=""font-size:12px;color:#777;margin:0;"">
+    Bu e-posta <strong>Time Capsule</strong> sistemi üzerinden planlanmış bir geleceğe mektup teslimatıdır.
+    Lütfen bu e-postaya yanıt vermeyin; bu adres yalnızca gönderim amaçlıdır ve yanıtlar takip edilmez.
+  </p>
+</div>";
+
+                    bool success;
+
+                    if (hasImage)
+                    {
+                        var fullPath = GetFullImagePathFromWebRoot(msg.ImagePath);
+                        success = await _emailSender.SendAsync(recipientEmail, subject, emailBody, fullPath, cid);
+                    }
+                    else
+                    {
+                        success = await _emailSender.SendAsync(recipientEmail, subject, emailBody);
+                    }
 
                     if (success)
                     {
@@ -276,6 +332,21 @@ namespace Business.Concrete
             }
 
             await _repo.SaveChangesAsync();
+        }
+
+        private string GetFullImagePathFromWebRoot(string imagePath)
+        {
+            if (string.IsNullOrWhiteSpace(imagePath))
+                return null;
+
+            var relative = imagePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString());
+            return Path.Combine(_env.WebRootPath, relative);
+        }
+
+        // Bu interface'te var ama controller'da kullanmıyoruz; projende varsa bırak.
+        public Task<TimeCapsuleManageViewModel> GetManageViewAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

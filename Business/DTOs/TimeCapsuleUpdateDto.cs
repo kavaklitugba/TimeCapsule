@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 
 namespace Business.DTOs
 {
@@ -10,5 +11,9 @@ namespace Business.DTOs
         public string Subject { get; set; }
         public string Body { get; set; }
         public DateTime SendAtLocal { get; set; }
+        public IFormFile ImageFile { get; set; }
+        public bool RemoveImage { get; set; }
+        public string ImagePath { get; set; } // controller dolduruyor
+
     }
 }

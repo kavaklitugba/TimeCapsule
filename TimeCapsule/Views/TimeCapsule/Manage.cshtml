@@ -8,21 +8,21 @@
         <div class="col-lg-7">
             <div class="card tc-card shadow-sm">
                 <div class="tc-card-header">
-                    <h3 class="mb-0">Kapsül Yönetimi</h3>
+                    <h3 class="mb-1">Kapsül Yönetimi</h3>
                     <small class="text-secondary">
                         Kapsül ID’nizi girerek durumunu kontrol edin veya işlemleri yönetin.
                     </small>
                 </div>
 
-                <div class="card-body p-4">
+                <div class="card-body p-4 text-start">
                     @if (ViewBag.Message != null)
                     {
-                        <div class="alert alert-info">@ViewBag.Message</div>
+                        <div class="alert alert-info mb-3">@ViewBag.Message</div>
                     }
 
                     @if (!ViewData.ModelState.IsValid)
                     {
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger mb-3">
                             @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
                             {
                                 <div>@err.ErrorMessage</div>
@@ -30,6 +30,7 @@
                         </div>
                     }
 
+                    <!-- LOOKUP -->
                     <form asp-action="Lookup" method="get" class="mb-4">
                         <div class="input-group tc-inputgroup">
                             <input type="text"
@@ -37,30 +38,30 @@
                                    class="form-control"
                                    placeholder="Kapsül ID’nizi girin"
                                    required />
-                            <button class="btn btn-tc-primary" type="submit">Sorgula</button>
+                            <button class="tc-btn tc-btn--query" type="submit">Sorgula</button>
                         </div>
                     </form>
 
                     @if (Model != null)
                     {
-                        <!-- SADECE OKUNABİLİR BÖLÜM -->
+                        <!-- INFO CARD -->
                         <div class="card tc-innercard mb-3">
-                            <div class="card-body">
+                            <div class="card-body text-start">
                                 <h5 class="card-title mb-3">Kapsül Bilgileri</h5>
 
-                                <p><strong>ID:</strong> @Model.LookupId</p>
-                                <p><strong>Gönderen:</strong> @Model.SenderEmail</p>
-                                <p><strong>Alıcı:</strong> @Model.RecipientEmail</p>
-                                <p><strong>Konu:</strong> @Model.Subject</p>
-                                <p><strong>Oluşturulma Tarihi:</strong> @Model.CreatedAtLocal</p>
-                                <p><strong>Planlanan Gönderim:</strong> @Model.SendAtLocal</p>
+                                <p class="mb-2"><strong>ID:</strong> @Model.LookupId</p>
+                                <p class="mb-2"><strong>Gönderen:</strong> @Model.SenderEmail</p>
+                                <p class="mb-2"><strong>Alıcı:</strong> @Model.RecipientEmail</p>
+                                <p class="mb-2"><strong>Konu:</strong> @Model.Subject</p>
+                                <p class="mb-2"><strong>Oluşturulma:</strong> @Model.CreatedAtLocal.ToString("dd MMMM yyyy HH:mm")</p>
+                                <p class="mb-3"><strong>Planlanan Gönderim:</strong> @Model.SendAtLocal.ToString("dd MMMM yyyy HH:mm")</p>
 
                                 @if (Model.SentAtLocal.HasValue)
                                 {
-                                    <p><strong>Gönderildi:</strong> @Model.SentAtLocal</p>
+                                    <p class="mb-3"><strong>Gönderildi:</strong> @Model.SentAtLocal?.ToString("dd MMMM yyyy HH:mm")</p>
                                 }
 
-                                <p>
+                                <p class="mb-3">
                                     <strong>Durum:</strong>
                                     @if (Model.IsActive && !Model.SentAtLocal.HasValue)
                                     {
@@ -80,59 +81,116 @@
                                 <div class="border rounded bg-light px-3 py-2 text-start tc-bodybox">
                                     @Model.Body
                                 </div>
+
+                                @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+                                {
+                                    <div class="mt-3">
+                                        <div class="tc-section-title mb-2">Eklenen görsel</div>
+
+                                        <div class="tc-image-frame">
+                                            <img src="@Model.ImagePath" alt="Eklenen görsel" class="tc-image" />
+                                        </div>
+                                    </div>
+                                }
                             </div>
                         </div>
 
                         @if (Model.IsActive && !Model.SentAtLocal.HasValue)
                         {
-                            <!-- İPTAL + DÜZENLE BUTONLARI -->
-                            <div class="mb-3 d-flex gap-2 flex-wrap">
-                                <form asp-action="Cancel" method="post">
+                            <!-- ACTIONS -->
+                            <div class="mb-3 tc-actions">
+                                <form asp-action="Cancel" method="post" class="m-0 p-0">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="lookupId" value="@Model.LookupId" />
-                                    <button type="submit" class="btn btn-tc-danger">
+                                    <button type="submit" class="tc-btn tc-btn--cancel">
                                         İptal Et
                                     </button>
                                 </form>
 
-                                <button type="button" id="toggleEdit" class="btn btn-tc-outline">
+                                <button type="button" id="toggleEdit" class="tc-btn tc-btn--edit">
                                     Düzenle
                                 </button>
                             </div>
 
-                            <!-- DÜZENLEME FORMU (BAŞTA GİZLİ) -->
+                            <!-- EDIT SECTION -->
                             <div id="editSection" class="card mt-2 d-none tc-innercard">
-                                <div class="card-body">
-                                    <h5 class="card-title mb-3">Kapsülü Düzenle</h5>
+                                <div class="card-body p-4 text-start">
+                                    <h5 class="card-title mb-2">Düzenle</h5>
+                            
 
-                                    <form asp-action="Update" method="post">
+                                    <form asp-action="Update" method="post" enctype="multipart/form-data">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="LookupId" value="@Model.LookupId" />
 
                                         <div class="mb-2">
                                             <label class="form-label">Gönderen E-posta</label>
-                                            <input class="form-control" name="SenderEmail"
-                                                   value="@Model.SenderEmail" required />
+                                            <input class="form-control" name="SenderEmail" value="@Model.SenderEmail" required />
                                         </div>
 
                                         <div class="mb-2">
                                             <label class="form-label">Alıcı E-posta</label>
-                                            <input class="form-control" name="RecipientEmail"
-                                                   value="@Model.RecipientEmail" required />
+                                            <input class="form-control" name="RecipientEmail" value="@Model.RecipientEmail" required />
                                         </div>
 
                                         <div class="mb-2">
                                             <label class="form-label">Konu</label>
-                                            <input class="form-control" name="Subject"
-                                                   value="@Model.Subject" />
+                                            <input class="form-control" name="Subject" value="@Model.Subject" />
                                         </div>
 
                                         <div class="mb-2">
                                             <label class="form-label">Mesaj</label>
-                                            <textarea class="form-control" name="Body" rows="5" required>@Model.Body</textarea>
+                                            <textarea class="form-control" name="Body" rows="5" required style="white-space:pre-wrap;">@Model.Body</textarea>
                                         </div>
 
-                                        <div class="mb-3">
+                                        @* --- Görsel Alanı --- *@
+                                        @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+                                        {
+                                            <div class="mt-3">
+                                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                                    <div class="tc-section-title">Görsel</div>
+
+                                                    <!-- hidden remove input -->
+                                                    <input type="hidden" id="RemoveImage" name="RemoveImage" value="false" />
+
+                                                    <div class="d-flex gap-2">
+                                                        <button type="button" id="btnRemoveImage" class="tc-iconbtn tc-iconbtn--danger">
+                                                            <span class="tc-icon" aria-hidden="true"><i class="fa-solid fa-trash"></i></span>
+                                                            Kaldır
+                                                        </button>
+
+                                                        <button type="button" id="btnUndoRemoveImage" class="tc-iconbtn d-none">
+                                                            <span class="tc-icon" aria-hidden="true"><i class="fa-solid fa-rotate-left"></i></span>
+                                                            Geri al
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div id="removeHint" class="tc-hint d-none">
+                                                    <div class="tc-soft-note mb-3">
+                                                        Görsel kaldırılacak. Kaydet dediğinde işlem uygulanır.
+                                                    </div>
+                                                </div>
+
+                                                <div class="tc-image-frame mt-2">
+                                                    <img src="@Model.ImagePath" alt="Mevcut görsel" class="tc-image" />
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <!-- Görsel yoksa hidden remove input yine olsun -->
+                                            <input type="hidden" id="RemoveImage" name="RemoveImage" value="false" />
+                                        }
+
+                                        <div class="mt-3">
+                                            <div class="tc-section-title mb-2">Görseli değiştir</div>
+                                            <div class="tc-soft-note mb-3">
+                                               Görsel seçmezsen mevcut görsel korunur.
+                                            </div>
+                                            <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                                        </div>
+
+                                        <div class="mt-3">
                                             <label class="form-label">Gönderim Tarihi</label>
                                             <input type="datetime-local"
                                                    class="form-control"
@@ -141,9 +199,11 @@
                                                    required />
                                         </div>
 
-                                        <button type="submit" class="btn btn-tc-primary">
-                                            Değişiklikleri Kaydet
-                                        </button>
+                                        <div class="mt-3">
+                                            <button type="submit" class="tc-btn tc-btn--edit">
+                                                Değişiklikleri Kaydet
+                                            </button>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -164,6 +224,28 @@
             if (toggleBtn && editSection) {
                 toggleBtn.addEventListener('click', function () {
                     editSection.classList.toggle('d-none');
+                });
+            }
+
+            // Remove Image toggle
+            const removeInput = document.getElementById('RemoveImage');
+            const btnRemove = document.getElementById('btnRemoveImage');
+            const btnUndo = document.getElementById('btnUndoRemoveImage');
+            const hint = document.getElementById('removeHint');
+
+            if (btnRemove && btnUndo && removeInput) {
+                btnRemove.addEventListener('click', function () {
+                    removeInput.value = "true";
+                    btnRemove.classList.add('d-none');
+                    btnUndo.classList.remove('d-none');
+                    if (hint) hint.classList.remove('d-none');
+                });
+
+                btnUndo.addEventListener('click', function () {
+                    removeInput.value = "false";
+                    btnUndo.classList.add('d-none');
+                    btnRemove.classList.remove('d-none');
+                    if (hint) hint.classList.add('d-none');
                 });
             }
         });

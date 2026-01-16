@@ -11,7 +11,9 @@ namespace Business.Abstract
 
         Task<TimeCapsuleManageViewModel?> GetManageInfoAsync(string lookupId);
         Task<bool> CancelAsync(string lookupId);
-        Task<bool> UpdateScheduleAsync(string lookupId, DateTime newSendAtLocal); 
+        Task<bool> UpdateScheduleAsync(string lookupId, DateTime newSendAtLocal);
         Task<bool> UpdateAsync(TimeCapsuleUpdateDto dto);
+
+        Task<TimeCapsuleManageViewModel> GetManageViewAsync(int id);
     }
 }
