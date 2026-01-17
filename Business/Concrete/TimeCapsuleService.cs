@@ -285,7 +285,7 @@ namespace Business.Concrete
                           <div style=""margin-top:16px;"">
                             <p style=""margin:0 0 8px; font-size:13px; color:#555;""><strong>Görsel:</strong></p>
                             <img src=""cid:{cid}""
-                                 style=""display:block; max-width:100%; height:auto; border-radius:12px; border:1px solid #e0e6ea;"" />
+                                 style=""display:block; max-width:420px; width:100%; height:auto; border-radius:12px; border:1px solid #e0e6ea;"" />
                           </div>";
                     }
 
