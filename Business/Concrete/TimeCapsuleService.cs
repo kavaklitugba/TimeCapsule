@@ -290,17 +290,17 @@ namespace Business.Concrete
                     }
 
                     var emailBody = $@"
-<div style=""font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:1.5;"">
-  <p style=""margin:0 0 10px;""><strong>Gönderen:</strong> {senderEmail}</p>
-  <hr style=""border:none;border-top:1px solid #e6e6e6;margin:12px 0;"" />
-  <div style=""white-space:pre-wrap;"">{bodyPlain}</div>
-  {inlineImgHtml}
-  <hr style=""border:none;border-top:1px solid #e6e6e6;margin:12px 0;"" />
-  <p style=""font-size:12px;color:#777;margin:0;"">
-    Bu e-posta <strong>Time Capsule</strong> sistemi üzerinden planlanmış bir geleceğe mektup teslimatıdır.
-    Lütfen bu e-postaya yanıt vermeyin; bu adres yalnızca gönderim amaçlıdır ve yanıtlar takip edilmez.
-  </p>
-</div>";
+                    <div style=""font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:1.5;"">
+                      <p style=""margin:0 0 10px;""><strong>Gönderen:</strong> {senderEmail}</p>
+                      <hr style=""border:none;border-top:1px solid #e6e6e6;margin:12px 0;"" />
+                      <div style=""white-space:pre-wrap;"">{bodyPlain}</div>
+                      {inlineImgHtml}
+                      <hr style=""border:none;border-top:1px solid #e6e6e6;margin:12px 0;"" />
+                      <p style=""font-size:12px;color:#777;margin:0;"">
+                        Bu e-posta <strong>Time Capsule</strong> sistemi üzerinden planlanmış bir geleceğe mektup teslimatıdır.
+                        Lütfen bu e-postaya yanıt vermeyin; bu adres yalnızca gönderim amaçlıdır ve yanıtlar takip edilmez.
+                      </p>
+                    </div>";
 
                     bool success;
 

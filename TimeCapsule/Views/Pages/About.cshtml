@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Hakkımızda";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="card tc-card shadow-sm">
+                <div class="tc-card-header">
+                    <h3 class="mb-0">Dijital Zaman Kapsülün</h3>
+                    <small>Bugünden yaz, seçtiğin tarihte geleceğe ulaşsın.</small>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="row g-4 align-items-stretch">
+                        <div class="col-lg-7">
+                            <p class="mb-3" style="line-height:1.75">
+                                TimeCapsule; bugün yazdığın mesajları, belirlediğin bir tarihte kendine veya sevdiklerine
+                                ulaştırmanı sağlayan dijital bir “zaman kapsülü” deneyimidir.
+                            </p>
+
+                            <div class="tc-soft-note mb-3">
+                                Amaç: Duygusal bağları güçlendiren, anlamlı anıları saklamayı kolaylaştırmak.
+                            </div>
+                            <div class="tc-hint mb-4">
+                                <span class="secure-dot"></span>
+                                Güvenlik ve gizlilik bizim için önemli.
+                            </div>
+                            <div class="d-flex flex-wrap gap-2">
+                                <a class="tc-btn tc-btn--ghost" href="/gizlilik-politikasi">Gizlilik Politikası</a>
+                                <a class="tc-btn tc-btn--edit" href="@Url.Action("Create", "TimeCapsule")">
+                                    Yeni Mektup
+                                </a>
+
+                                <a class="tc-btn tc-btn--query" href="@Url.Action("Manage", "TimeCapsule")">
+                                    Sorgula
+                                </a>
+                              
+                            </div>
+                           
+                        </div>
+
+                        <div class="col-lg-5">
+                            <div class="card tc-innercard h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="card-title mb-3">Nasıl çalışır?</h5>
+
+                                    <div class="d-grid gap-3">
+                                        <div class="tc-soft-note">
+                                            <strong>1)</strong> Bir mektup oluşturursun
+                                        </div>
+                                        <div class="tc-soft-note">
+                                            <strong>2)</strong> Teslim tarihini seçersin
+                                        </div>
+                                        <div class="tc-soft-note">
+                                            <strong>3)</strong> Zamanı gelince alıcıya iletilir
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <div class="tc-section-title mb-2">Kısa not</div>
+                                        <div class="text-secondary" style="font-size:0.95rem; line-height:1.6;">
+                                            TimeCapsule sürekli geliştirilmeye devam eden bir projedir.
+                                            Geri bildirimlerinizi duymayı isteriz.
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4">
+                                        <a class="tc-btn tc-btn--edit w-100 text-center" href="/iletisim">
+                                            İletişime Geç
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- row -->
+                </div><!-- body -->
+            </div><!-- card -->
+
+        </div>
+    </div>
+</div>

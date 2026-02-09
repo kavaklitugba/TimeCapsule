@@ -54,7 +54,7 @@ namespace Business.Concrete
             }
         }
 
-        // ✅ Inline görsel (CID) ile gönderim
+        // Inline görsel (CID) ile gönderim
         public async Task<bool> SendAsync(string toEmail, string subject, string body, string inlineImageFullPath, string contentId)
         {
             try

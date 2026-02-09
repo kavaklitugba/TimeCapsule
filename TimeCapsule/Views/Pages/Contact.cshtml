@@ -1,0 +1,114 @@
+﻿@model TimeCapsule.Models.ContactFormViewModel
+@{
+    ViewData["Title"] = "İletişim";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+
+            <div class="card tc-card shadow-sm">
+                <div class="tc-card-header">
+                    <h3 class="mb-0">İletişim</h3>
+                    <small>Sorularınız, önerileriniz veya iş birlikleri için bize yazabilirsiniz.</small>
+                </div>
+
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-lg-7">
+
+                            @if (TempData["ContactSuccess"] != null)
+                            {
+                                <div class="alert alert-success tc-success-box">
+                                    <div class="tc-success-title">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        @TempData["ContactSuccess"]
+                                    </div>
+                                </div>
+                            }
+
+                            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.Values.Any(v => v.Errors.Count > 0))
+                            {
+                                <div class="alert alert-danger tc-error-box">
+                                    <div class="tc-error-title">İşlem tamamlanamadı!</div>
+                                    <div class="tc-error-text">Lütfen alanları kontrol edip tekrar deneyin.</div>
+                                </div>
+                            }
+
+                            <form method="post" asp-action="Contact" asp-controller="Pages" novalidate>
+                                @Html.AntiForgeryToken()
+
+                                <div class="mb-3">
+                                    <label class="form-label">Ad Soyad</label>
+                                    <input class="form-control" asp-for="Name" placeholder="Adınız Soyadınız" />
+                                    <span class="text-danger" asp-validation-for="Name"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">E-posta</label>
+                                    <input class="form-control" asp-for="Email" placeholder="ornek@mail.com" />
+                                    <span class="text-danger" asp-validation-for="Email"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Konu</label>
+                                    <input class="form-control" asp-for="Subject" placeholder="Kısaca konu" />
+                                    <span class="text-danger" asp-validation-for="Subject"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Mesaj</label>
+                                    <textarea class="form-control" asp-for="Message" rows="6" placeholder="Mesajınız..."></textarea>
+                                    <span class="text-danger" asp-validation-for="Message"></span>
+                                </div>
+
+                                <div class="tc-form-footer">
+                                    <div class="tc-hint">
+                                        <span class="secure-dot"></span>
+                                        Mesajınız ilgili ekibe iletilir ve en kısa sürede dönüş yapılır.
+                                    </div>
+
+                                    <button type="submit" class="btn capsule-submit-btn">
+                                        Gönder
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="col-lg-5">
+                            <div class="card tc-innercard mb-3">
+                                <div class="card-body p-4">
+                                    <h5 class="card-title mb-3">Bize Ulaşın</h5>
+
+                                    <div class="tc-soft-note mb-3">
+                                        <strong>E-posta</strong><br />
+                                        <a href="mailto:capsuleoffuture@gmail.com">capsuleoffuture@gmail.com</a>
+                                    </div>
+
+                                    <div class="tc-soft-note">
+                                        <strong>Yanıt süresi</strong><br />
+                                        Genelde 24–48 saat içinde dönüş yapıyoruz.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card tc-innercard">
+                                <div class="card-body p-4">
+                                    <div class="tc-section-title mb-2">İpucu</div>
+                                    <div class="text-secondary" style="line-height:1.6;">
+                                        Hata bildirimi gönderiyorsanız mümkünse ekran görüntüsü ve kısa açıklama ekleyin.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!-- row -->
+                </div><!-- body -->
+            </div><!-- card -->
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

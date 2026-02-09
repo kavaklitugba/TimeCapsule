@@ -60,17 +60,17 @@
                     <form asp-action="Create" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
 
                         <div class="mb-3">
-                            <label class="form-label">Gönderen E-posta</label>
-                            <input asp-for="SenderEmail" type="email" class="form-control" placeholder="sen@gmail.com" required />
+                            <label class="form-label">Gönderici E-posta <span style="font-size:.92rem;color:#6c757d;display:flex">(Kapsül ile ilgili bilgilendirmeler bu adrese gönderilecektir)</span></label>
+                            <input asp-for="SenderEmail" type="email" class="form-control" placeholder="gönderici@gmail.com" required />
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">Alıcı E-posta</label>
-                            <input asp-for="RecipientEmail" type="email" class="form-control" placeholder="gelecekteki.sen@gmail.com" required />
+                            <input asp-for="RecipientEmail" type="email" class="form-control" placeholder="alıcı@gmail.com" required />
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Konu (opsiyonel)</label>
+                            <label class="form-label">Konu <span style="font-size:.92rem;color:#6c757d">(Opsiyonel)</span></label>
                             <input asp-for="Subject" type="text" class="form-control" placeholder="Geleceğe mektup..." />
                         </div>
 
@@ -79,26 +79,29 @@
 
                             <div class="d-grid gap-2 mb-2">
                                 <div class="btn-group d-flex flex-wrap justify-content-between tc-preset" role="group" aria-label="Hazır süreler">
+
                                     <input type="radio" class="btn-check" name="presetMonths" id="m3" value="3" autocomplete="off">
-                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m3">3 Ay</label>
+                                    <label class="btn tc-pill btn-sm flex-fill" for="m3">3 Ay</label>
 
                                     <input type="radio" class="btn-check" name="presetMonths" id="m6" value="6" autocomplete="off">
-                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m6">6 Ay</label>
+                                    <label class="btn tc-pill btn-sm flex-fill" for="m6">6 Ay</label>
 
                                     <input type="radio" class="btn-check" name="presetMonths" id="m12" value="12" autocomplete="off">
-                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m12">1 Yıl</label>
+                                    <label class="btn tc-pill btn-sm flex-fill" for="m12">1 Yıl</label>
 
                                     <input type="radio" class="btn-check" name="presetMonths" id="m24" value="24" autocomplete="off">
-                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m24">2 Yıl</label>
+                                    <label class="btn tc-pill btn-sm flex-fill" for="m24">2 Yıl</label>
 
                                     <input type="radio" class="btn-check" name="presetMonths" id="m60" value="60" autocomplete="off">
-                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m60">5 Yıl</label>
+                                    <label class="btn tc-pill btn-sm flex-fill" for="m60">5 Yıl</label>
 
                                     <input type="radio" class="btn-check" name="presetMonths" id="m120" value="120" autocomplete="off">
-                                    <label class="btn btn-outline-dark btn-sm flex-fill" for="m120">10 Yıl</label>
+                                    <label class="btn tc-pill btn-sm flex-fill" for="m120">10 Yıl</label>
 
-                                    <input type="radio" class="btn-check" name="presetMonths" id="none" value="" autocomplete="off" checked>
-                                    <label class="btn btn-outline-secondary btn-sm flex-fill" for="none">Tarih Seç</label>
+                                    <!-- Tarih Seç: mobilde tam genişlik olacak -->
+                                    <input type="radio" class="btn-check" name="presetMonths" id="mCustom" value="" autocomplete="off" checked>
+                                    <label class="btn tc-pill tc-pill--primary btn-sm flex-fill tc-datepick" for="mCustom">Tarih Seç</label>
+
                                 </div>
                             </div>
 
@@ -111,7 +114,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label">Resim (opsiyonel)</label>
+                            <label class="form-label">Resim <span style="font-size:.92rem;color:#6c757d">(Opsiyonel)</span></label>
                             <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
                             <span asp-validation-for="ImageFile" class="text-danger"></span>
                         </div>

@@ -678,3 +678,275 @@ h1, h2, h3, h4, h5 {
     font-size: 16px;
     line-height: 1;
 }
+.tc-cookie {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9999;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.tc-cookie__text {
+    font-size: 0.92rem;
+    color: rgba(0,0,0,0.65);
+    line-height: 1.35;
+}
+
+    .tc-cookie__text a {
+        color: inherit;
+        text-decoration: underline;
+    }
+
+.tc-cookie__actions {
+    flex: 0 0 auto;
+}
+
+.tc-cookie__btn {
+    padding: 10px 16px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+@media (max-width: 575px) {
+    .tc-cookie {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tc-cookie__btn {
+        width: 100%;
+    }
+}
+
+.dash-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+    .dash-row:last-child {
+        border-bottom: 0;
+    }
+
+.dash-label {
+    color: rgba(0,0,0,0.65);
+    font-weight: 500;
+}
+
+.dash-value {
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+/* ---------- Mobil: preset tarih butonlarý taþmasýn ---------- */
+.tc-preset {
+    gap: 8px;
+}
+
+    /* Bootstrap btn-group içinde flex-fill bazen çok sýkýþtýrýyor */
+    .tc-preset .btn {
+        min-width: 72px;
+    }
+
+/* Mobilde satýrlar düzgün kýrýlsýn */
+@media (max-width: 576px) {
+    .tc-preset {
+        justify-content: flex-start !important;
+    }
+
+        .tc-preset .btn {
+            flex: 1 1 calc(33.333% - 8px); /* 3'lü dizilim */
+        }
+
+        /* Tarih Seç: tek baþýna alta geçsin */
+        .tc-preset .tc-datepick {
+            flex: 1 1 100%;
+        }
+}
+
+/* ---------- Gizlilik linkini buton gibi yap ---------- */
+.tc-inline-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tc-hint-text {
+    opacity: 0.85;
+}
+
+/* mevcut tc-btn stilini bozmadan link butonu */
+.tc-btn.tc-btn--link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(0,0,0,0.12);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: #fff;
+}
+
+    .tc-btn.tc-btn--link:hover {
+        text-decoration: none;
+        border-color: rgba(0,0,0,0.22);
+        transform: translateY(-1px);
+    }
+
+/* 3. buton: soft / ghost */
+.tc-btn--ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(12, 85, 105, .25);
+    background: #fff;
+    color: #0c5569;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+    .tc-btn--ghost:hover {
+        background: rgba(12, 85, 105, .06);
+        text-decoration: none;
+    }
+
+/* Navbar mobilde üst üste binmesin */
+.topbar-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    background: #fff;
+}
+
+/* Navbar gölge - içerikten ayrýþsýn */
+.topbar-wrap {
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+}
+
+/* page-wrapper zaten varsa override edelim */
+.page-wrapper {
+    padding-top: 0;
+}
+
+/* Mobilde header yüksekliðini garantileyelim */
+@media (max-width: 576px) {
+
+    /* navbar container çok dar kalmasýn */
+    .navbar-tc-container {
+        align-items: center;
+    }
+
+    /* hamburger buton taþmasýn */
+    .navbar-toggler {
+        padding: 10px 12px;
+        border-radius: 12px;
+    }
+
+    /* action butonlarý alt satýra düþüp çakýþmasýn */
+    .nav-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+}
+
+/* Tarih preset butonlarý - soft pill */
+.tc-pill {
+    border-radius: 999px !important;
+    border: 1px solid rgba(12, 85, 105, .22) !important;
+    background: #fff !important;
+    color: #0c5569 !important;
+    font-weight: 600;
+    padding: 8px 12px;
+}
+
+    /* hover */
+    .tc-pill:hover {
+        background: rgba(12, 85, 105, .06) !important;
+    }
+
+/* seçili (radio checked) olduðunda */
+.btn-check:checked + .tc-pill {
+    background: #0c5569 !important;
+    border-color: #0c5569 !important;
+    color: #fff !important;
+    box-shadow: 0 10px 20px rgba(12, 85, 105, .18);
+}
+
+/* Tarih Seç biraz daha vurgulu */
+.tc-pill--primary {
+    border-color: rgba(255, 120, 0, .35) !important;
+}
+
+.btn-check:checked + .tc-pill--primary {
+    background: linear-gradient(135deg, #0c5569, #ff7a00) !important;
+    border-color: transparent !important;
+}
+
+/* ============================
+   TC FIX PACK - SON DOKUNUSLAR
+   (logoyu küçültme + header yapýþmasý + tarih seç tek renk)
+   ============================ */
+
+/* 1) Logo küçülmesin: mobil/desktop daha büyük kalsýn */
+.brand-logo {
+    max-height: 92px !important; /* önce 72 yaptýysan geri büyüt */
+}
+
+/* Çok küçük ekranlarda yine de taþmasýn */
+@media (max-width: 576px) {
+    .brand-logo {
+        max-height: 84px !important;
+    }
+}
+
+/* 2) Navbar ile içerik birbirine yapýþmasýn (özellikle Create sayfasýnda) */
+.page-wrapper {
+    padding-top: 18px !important;
+}
+
+/* 3) Create kartý/header'ý navbar'a yapýþmasýn (genel yumuþak boþluk) */
+main[role="main"] {
+    padding-top: 6px; /* küçük nefes */
+}
+
+/* Eðer kart/header üstü yine çok yakýnsa, card wrapper'a da güvenli boþluk */
+.tc-card {
+    margin-top: 10px;
+}
+
+/* 4) "Tarih Seç" fazla renkli olmasýn: gradient kapat, tek renk yap */
+.btn-check:checked + .tc-pill--primary {
+    background: #0c5569 !important; /* TEK RENK */
+    border-color: #0c5569 !important;
+    color: #fff !important;
+    box-shadow: 0 10px 20px rgba(12, 85, 105, .18) !important;
+}
+
+/* Gradient'i tamamen ez */
+.btn-check:checked + .tc-pill--primary {
+    background-image: none !important;
+}
+
+/* Tarih Seç seçili deðilken de soft kalsýn */
+.tc-pill--primary {
+    border-color: rgba(12, 85, 105, .28) !important;
+}

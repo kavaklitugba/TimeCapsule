@@ -66,7 +66,7 @@ namespace TimeCapsule.Controllers
 
                 // Resmi kaydet
                 var imagePath = await SaveImageAsync(model.ImageFile);
-                model.ImagePath = imagePath;
+                model.ImagePath = imagePath ?? "";
 
                 var lookupId = await _service.CreateAsync(model);
                 bool emailSent = false;

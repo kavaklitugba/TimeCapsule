@@ -1,0 +1,104 @@
+﻿@using Microsoft.AspNetCore.Html
+@model TimeCapsule.Models.DbDashboardVm
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container py-5">
+
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-4">
+        <div>
+            <h2 class="mb-1">TimeCapsule Dashboard</h2>
+            <div class="text-muted">Son güncelleme: @Model.GeneratedAtLocal.ToString("dd.MM.yyyy HH:mm")</div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a class="tc-btn tc-btn--edit" href="https://analytics.google.com/" target="_blank">
+                Google Analytics (Ziyaretçiler)
+            </a>
+        </div>
+    </div>
+
+   @*  <div class="row g-3 mb-4">
+        <div class="col-lg-4">
+            <div class="card tc-innercard h-100">
+                <div class="card-body p-4">
+                    <div class="text-muted mb-1">Görselli Toplam</div>
+                    <div class="display-6 fw-bold">@Model.TotalWithImage</div>
+                    <div class="text-muted mt-2">ImagePath dolu olan kayıtlar</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card tc-card shadow-sm h-100">
+                <div class="tc-card-header">
+                    <h4 class="mb-0">Hızlı Özet</h4>
+                    <small>Kaydedilen / Başarıyla gönderilen</small>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-3">@PeriodTile("Bugün", Model.Today)</div>
+                        <div class="col-md-3">@PeriodTile("Bu hafta", Model.Week)</div>
+                        <div class="col-md-3">@PeriodTile("Bu ay", Model.Month)</div>
+                        <div class="col-md-3">@PeriodTile("Tümü", Model.All)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> *@
+
+    <!-- Senin istediğin gibi alt alta 3 satır -->
+    <div class="row g-3">
+        <div class="col-lg-6">
+            @SectionCard("Bugün", "📅", Model.Today)
+        </div>
+        <div class="col-lg-6">
+            @SectionCard("Bu hafta (son 7 gün)", "🗓️", Model.Week)
+        </div>
+        <div class="col-lg-6">
+            @SectionCard("Bu ay (son 30 gün)", "🌙", Model.Month)
+        </div>
+        <div class="col-lg-6">
+            @SectionCard("Tüm zamanlar", "🏁", Model.All)
+        </div>
+    </div>
+
+</div>
+
+@functions {
+    public IHtmlContent SectionCard(string title, string emoji, TimeCapsule.Models.PeriodVm s)
+    {
+        var html = $@"
+<div class='card tc-card shadow-sm h-100'>
+  <div class='tc-card-header'>
+    <h4 class='mb-0'>{emoji} {title}</h4>
+    <small>DB metrikleri</small>
+  </div>
+  <div class='card-body p-4'>
+    <div class='dash-row'>
+      <div class='dash-label'>✉️ Mektup kaydedildi</div>
+      <div class='dash-value'>{s.LettersSaved}</div>
+    </div>
+    <div class='dash-row'>
+      <div class='dash-label'>✅ Başarılı gönderildi</div>
+      <div class='dash-value'>{s.LettersSent}</div>
+    </div>
+  </div>
+</div>";
+        return new HtmlString(html);
+    }
+
+    public IHtmlContent PeriodTile(string title, TimeCapsule.Models.PeriodVm s)
+    {
+        var html = $@"
+<div class='card tc-innercard h-100'>
+  <div class='card-body p-3'>
+    <div class='text-muted' style='font-size:.9rem'>{title}</div>
+    <div class='fw-semibold'>Kaydedilen: {s.LettersSaved}</div>
+    <div class='fw-semibold'>Gönderilen: {s.LettersSent}</div>
+  </div>
+</div>";
+        return new HtmlString(html);
+    }
+}

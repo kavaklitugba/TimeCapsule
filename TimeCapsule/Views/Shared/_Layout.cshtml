@@ -6,13 +6,14 @@
     <title>@ViewData["Title"] - TimeCapsule</title>
     <link rel="shortcut icon" href="~/img/time-capsule.png" type="image/png">
 
-
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TimeCapsule.styles.css" asp-append-version="true" />
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
           referrerpolicy="no-referrer" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8868198562063849"
+            crossorigin="anonymous"></script>
 </head>
 <body>
     @{
@@ -67,9 +68,23 @@
         </main>
     </div>
 
-    <footer class="footer-soft text-muted">
-        <div class="container text-center small">
-            Tüm Hakları Saklıdır &copy; TimeCapsule @DateTime.Now.Year
+    <footer class="footer-soft border-top mt-4">
+        <div class="container py-2">
+            <div class="row align-items-center">
+
+                <div class="col-md-6 text-center text-md-start small">
+                    <a href="/hakkimizda" class="text-muted me-2">Hakkımızda</a>
+                    <span class="text-muted me-2">·</span>
+                    <a href="/iletisim" class="text-muted me-2">İletişim</a>
+                    <span class="text-muted me-2">·</span>
+                    <a href="/gizlilik-politikasi" class="text-muted">Gizlilik Politikası</a>
+                </div>
+
+                <div class="col-md-6 text-center text-md-end small text-muted mt-2 mt-md-0">
+                    © @DateTime.Now.Year TimeCapsule
+                </div>
+
+            </div>
         </div>
     </footer>
 
@@ -77,5 +92,140 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Cookie Banner -->
+    <div id="tc-cookie" class="tc-cookie" style="display:none;">
+        <div class="tc-cookie__text">
+            Bu site deneyimi iyileştirmek ve analiz/reklam hizmetleri sunmak amacıyla çerezler kullanabilir.
+            <a href="/gizlilik-politikasi">Detaylar</a>
+        </div>
+
+        <div class="tc-cookie__actions">
+            <button type="button"
+                    class="btn capsule-submit-btn tc-cookie__btn"
+                    id="tc-cookie-accept">
+                Kabul ediyorum
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* =========================
+           Cookie helpers
+        ========================== */
+        function tcSetCookie(name, value, days) {
+            var maxAge = days * 24 * 60 * 60;
+            document.cookie = name + "=" + encodeURIComponent(value)
+                + "; path=/; max-age=" + maxAge + "; samesite=lax";
+        }
+
+        function tcGetCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length === 2)
+                return decodeURIComponent(parts.pop().split(";").shift());
+            return null;
+        }
+
+        /* =========================
+           Google Analytics loader
+           (sadece consent olunca)
+        ========================== */
+        function tcLoadGA(measurementId) {
+            if (!measurementId) return;
+            if (window.__tc_ga_loaded) return;
+            window.__tc_ga_loaded = true;
+
+            var s = document.createElement("script");
+            s.async = true;
+            s.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(measurementId);
+            document.head.appendChild(s);
+
+            window.dataLayer = window.dataLayer || [];
+            function gtag() { dataLayer.push(arguments); }
+            window.gtag = gtag;
+
+            gtag("js", new Date());
+            gtag("config", measurementId, { anonymize_ip: true });
+        }
+
+        /* =========================
+           AdSense loader
+           (sadece consent olunca)
+        ========================== */
+        function tcLoadAdsense(clientId) {
+            if (!clientId) return;
+            if (window.__tc_adsense_loaded) return;
+            window.__tc_adsense_loaded = true;
+
+            var s = document.createElement("script");
+            s.async = true;
+            s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="
+                + encodeURIComponent(clientId);
+            s.crossOrigin = "anonymous";
+            document.head.appendChild(s);
+        }
+    </script>
+
+    <script>
+        (function () {
+            // Kalıcı saklama: cookie (garanti) + localStorage (yedek)
+            var COOKIE_KEY = "tc_cookie_ok";
+            var LS_KEY = "tc_cookie_ok_v1";
+
+            // GA measurement id appsettings.json'dan
+            var MEASUREMENT_ID =
+                "@( (Context.RequestServices.GetService(typeof(Microsoft.Extensions.Configuration.IConfiguration))
+                                        as Microsoft.Extensions.Configuration.IConfiguration)?["GoogleAnalytics:MeasurementId"] ?? "" )";
+
+            // AdSense client id (sende hazır)
+            var ADSENSE_CLIENT = "ca-pub-8868198562063849";
+
+            function hasConsent() {
+                try {
+                    if (tcGetCookie(COOKIE_KEY) === "1") return true;
+                    return localStorage.getItem(LS_KEY) === "1";
+                } catch (e) {
+                    return tcGetCookie(COOKIE_KEY) === "1";
+                }
+            }
+
+            function persistConsent() {
+                tcSetCookie(COOKIE_KEY, "1", 365);
+                try { localStorage.setItem(LS_KEY, "1"); } catch (e) { }
+            }
+
+            function showBanner() {
+                var el = document.getElementById("tc-cookie");
+                if (el) el.style.display = "flex";
+            }
+
+            function hideBanner() {
+                var el = document.getElementById("tc-cookie");
+                if (el) el.style.display = "none";
+            }
+
+            // İlk yükleme
+            if (hasConsent()) {
+                hideBanner();
+                tcLoadGA(MEASUREMENT_ID);
+                tcLoadAdsense(ADSENSE_CLIENT);
+            } else {
+                showBanner();
+            }
+
+            // Kabul
+            var btn = document.getElementById("tc-cookie-accept");
+            if (btn) {
+                btn.addEventListener("click", function () {
+                    persistConsent();
+                    hideBanner();
+                    tcLoadGA(MEASUREMENT_ID);
+                    tcLoadAdsense(ADSENSE_CLIENT);
+                });
+            }
+        })();
+    </script>
+
 </body>
 </html>
